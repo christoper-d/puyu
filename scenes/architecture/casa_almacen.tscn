@@ -1,0 +1,172 @@
+[gd_scene format=3 uid="uid://c0m3v6b0q4p2"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+[ext_resource type="PackedScene" path="res://scenes/architecture/techo_paja.tscn" id="2_techopaja"]
+[ext_resource type="PackedScene" path="res://scenes/props/pila_lena.tscn" id="3_lena"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_adobe_weathered"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.44, 0.32, 0.22, 1)
+shader_parameter/roughness_val = 0.98
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_interior_earth"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.26, 0.19, 0.14, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wood"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.22, 0.15, 0.10, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_back"]
+material = SubResource("ShaderMaterial_adobe_weathered")
+size = Vector3(5.0, 3.0, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_back"]
+size = Vector3(5.0, 3.0, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_side"]
+material = SubResource("ShaderMaterial_adobe_weathered")
+size = Vector3(0.5, 3.0, 4.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_side"]
+size = Vector3(0.5, 3.0, 4.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_front_left"]
+material = SubResource("ShaderMaterial_adobe_weathered")
+size = Vector3(1.6, 3.0, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_front_left"]
+size = Vector3(1.6, 3.0, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_front_right"]
+material = SubResource("ShaderMaterial_adobe_weathered")
+size = Vector3(2.0, 3.0, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_front_right"]
+size = Vector3(2.0, 3.0, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lintel"]
+material = SubResource("ShaderMaterial_wood")
+size = Vector3(1.6, 0.3, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_front_top"]
+material = SubResource("ShaderMaterial_adobe_weathered")
+size = Vector3(1.4, 0.7, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_front_top"]
+size = Vector3(1.4, 0.7, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+material = SubResource("ShaderMaterial_interior_earth")
+size = Vector3(4.2, 0.2, 3.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(4.2, 0.2, 3.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_crate"]
+material = SubResource("ShaderMaterial_wood")
+size = Vector3(0.9, 0.8, 0.9)
+
+[sub_resource type="PrismMesh" id="PrismMesh_gable"]
+material = SubResource("ShaderMaterial_adobe_weathered")
+left_to_right = 0.5
+size = Vector3(4.2, 1.2, 0.48)
+
+[node name="CasaAlmacen" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+mesh = SubResource("BoxMesh_floor")
+
+[node name="FloorColl" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -2.05)
+mesh = SubResource("BoxMesh_wall_back")
+
+[node name="CollisionBack" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -2.05)
+shape = SubResource("BoxShape3D_wall_back")
+
+[node name="WallLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 1.5, 0.05)
+mesh = SubResource("BoxMesh_wall_side")
+
+[node name="CollisionLeft" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 1.5, 0.05)
+shape = SubResource("BoxShape3D_wall_side")
+
+[node name="WallRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.25, 1.5, 0.05)
+mesh = SubResource("BoxMesh_wall_side")
+
+[node name="CollisionRight" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.25, 1.5, 0.05)
+shape = SubResource("BoxShape3D_wall_side")
+
+[node name="FrontLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7, 1.5, 2.05)
+mesh = SubResource("BoxMesh_front_left")
+
+[node name="CollisionFrontLeft" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7, 1.5, 2.05)
+shape = SubResource("BoxShape3D_front_left")
+
+[node name="FrontRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.5, 2.05)
+mesh = SubResource("BoxMesh_front_right")
+
+[node name="CollisionFrontRight" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.5, 2.05)
+shape = SubResource("BoxShape3D_front_right")
+
+[node name="DoorLintel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 2.15, 2.05)
+mesh = SubResource("BoxMesh_lintel")
+
+[node name="FrontTop" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 2.65, 2.05)
+mesh = SubResource("BoxMesh_front_top")
+
+[node name="CollisionFrontTop" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 2.65, 2.05)
+shape = SubResource("BoxShape3D_front_top")
+
+[node name="GableLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2.25, 3.6, 0)
+mesh = SubResource("PrismMesh_gable")
+
+[node name="GableRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2.25, 3.6, 0)
+mesh = SubResource("PrismMesh_gable")
+
+[node name="TechoPaja" parent="." instance=ExtResource("2_techopaja")]
+transform = Transform3D(0.9, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 0)
+
+[node name="PilaLena1" parent="." instance=ExtResource("3_lena")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 0.2, -1.0)
+
+[node name="PilaLena2" parent="." instance=ExtResource("3_lena")]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 1.1, 0.2, -0.9)
+
+[node name="Crate" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 0.6, 0.7)
+mesh = SubResource("BoxMesh_crate")

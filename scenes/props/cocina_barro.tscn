@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://cb4n7m1x8q9w2"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mud_stove"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.44, 0.30, 0.20, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_soot"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.12, 0.11, 0.10, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pot"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.32, 0.22, 0.16, 1)
+shader_parameter/roughness_val = 0.9
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+material = SubResource("ShaderMaterial_mud_stove")
+size = Vector3(1.6, 0.75, 1.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_stove"]
+size = Vector3(1.6, 0.75, 1.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fire_hole"]
+material = SubResource("ShaderMaterial_soot")
+size = Vector3(0.5, 0.45, 0.4)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_burner1"]
+material = SubResource("ShaderMaterial_soot")
+top_radius = 0.22
+bottom_radius = 0.22
+height = 0.05
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pot"]
+material = SubResource("ShaderMaterial_pot")
+top_radius = 0.2
+bottom_radius = 0.15
+height = 0.32
+
+[node name="CocinaBarro" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+
+[node name="BaseStove" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, 0)
+mesh = SubResource("BoxMesh_body")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, 0)
+shape = SubResource("BoxShape3D_stove")
+
+[node name="FireOpening" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.25, 0.4)
+mesh = SubResource("BoxMesh_fire_hole")
+
+[node name="BurnerLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.76, -0.05)
+mesh = SubResource("CylinderMesh_burner1")
+
+[node name="BurnerRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.76, -0.05)
+mesh = SubResource("CylinderMesh_burner1")
+
+[node name="ClayPot" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.92, -0.05)
+mesh = SubResource("CylinderMesh_pot")
+
+[node name="EmberGlow" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.25, 0.45)
+light_color = Color(1, 0.48, 0.18, 1)
+light_energy = 0.9
+omni_range = 3.2
+omni_attenuation = 1.6

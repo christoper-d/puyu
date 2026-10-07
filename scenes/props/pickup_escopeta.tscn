@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://d1m4v2x8n5k7r"]
+
+[ext_resource type="Script" path="res://scripts/interactable_pickup.gd" id="1_script"]
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="2_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_stock"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.36, 0.22, 0.14, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_barrel"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.32, 0.33, 0.35, 1)
+shader_parameter/roughness_val = 0.8
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_stock"]
+material = SubResource("ShaderMaterial_stock")
+size = Vector3(0.08, 0.14, 0.42)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_barrel"]
+material = SubResource("ShaderMaterial_barrel")
+top_radius = 0.024
+bottom_radius = 0.028
+height = 0.75
+radial_segments = 5
+
+[sub_resource type="BoxMesh" id="BoxMesh_receiver"]
+material = SubResource("ShaderMaterial_barrel")
+size = Vector3(0.09, 0.12, 0.18)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_interact"]
+radius = 1.8
+
+[node name="PickupEscopeta" type="Area3D"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_script")
+item_type = 3
+item_name = "Escopeta"
+prompt_message = "[E] Tomar Escopeta Antigua"
+
+[node name="Stock" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0.12, 0.25)
+mesh = SubResource("BoxMesh_stock")
+
+[node name="Receiver" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+mesh = SubResource("BoxMesh_receiver")
+
+[node name="Barrel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.18, -0.42)
+mesh = SubResource("CylinderMesh_barrel")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("SphereShape3D_interact")

@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://de4p7b1x9m5k3"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bark"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.28, 0.19, 0.13, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wood_cut"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.58, 0.44, 0.28, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_log"]
+material = SubResource("ShaderMaterial_bark")
+top_radius = 0.14
+bottom_radius = 0.14
+height = 1.6
+radial_segments = 6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pile"]
+size = Vector3(1.4, 0.9, 1.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_beam_lean"]
+material = SubResource("ShaderMaterial_bark")
+size = Vector3(0.18, 2.2, 0.18)
+
+[node name="PilaLena" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("BoxShape3D_pile")
+
+[node name="Log1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.4, 0.14, 0)
+mesh = SubResource("CylinderMesh_log")
+
+[node name="Log2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.1, 0.14, 0)
+mesh = SubResource("CylinderMesh_log")
+
+[node name="Log3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.2, 0.14, 0)
+mesh = SubResource("CylinderMesh_log")
+
+[node name="Log4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.5, 0.14, 0)
+mesh = SubResource("CylinderMesh_log")
+
+[node name="Log5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.25, 0.4, 0)
+mesh = SubResource("CylinderMesh_log")
+
+[node name="Log6" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.05, 0.4, 0)
+mesh = SubResource("CylinderMesh_log")
+
+[node name="Log7" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.35, 0.4, 0)
+mesh = SubResource("CylinderMesh_log")
+
+[node name="Log8" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.1, 0.65, 0)
+mesh = SubResource("CylinderMesh_log")
+
+[node name="Log9" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.2, 0.65, 0)
+mesh = SubResource("CylinderMesh_log")
+
+[node name="BeamLeaning" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0.75, 1.05, 0.3)
+mesh = SubResource("BoxMesh_beam_lean")

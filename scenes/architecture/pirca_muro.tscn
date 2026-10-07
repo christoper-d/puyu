@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://e4x7b2k9p1m8r"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_stone_main"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.36, 0.37, 0.39, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_stone_alt"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.42, 0.40, 0.38, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_base"]
+material = SubResource("ShaderMaterial_stone_main")
+size = Vector3(6.0, 2.4, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall"]
+size = Vector3(6.0, 2.4, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_relief_1"]
+material = SubResource("ShaderMaterial_stone_alt")
+size = Vector3(1.8, 0.7, 0.9)
+
+[sub_resource type="BoxMesh" id="BoxMesh_relief_2"]
+material = SubResource("ShaderMaterial_stone_alt")
+size = Vector3(1.6, 0.6, 0.88)
+
+[sub_resource type="BoxMesh" id="BoxMesh_coping"]
+material = SubResource("ShaderMaterial_stone_alt")
+size = Vector3(6.2, 0.22, 0.9)
+
+[node name="PircaMuro" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+
+[node name="BaseMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("BoxMesh_wall_base")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+shape = SubResource("BoxShape3D_wall")
+
+[node name="Relief1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0.6, 0)
+mesh = SubResource("BoxMesh_relief_1")
+
+[node name="Relief2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 1.5, 0)
+mesh = SubResource("BoxMesh_relief_2")
+
+[node name="CopingTop" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+mesh = SubResource("BoxMesh_coping")

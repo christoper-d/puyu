@@ -1,0 +1,201 @@
+[gd_scene format=3 uid="uid://b6k9m1v4x8n2p"]
+
+[ext_resource type="Script" path="res://scripts/jarjacha.gd" id="1_script"]
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="2_ps2shader"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/health_bar_3d.tscn" id="3_healthbar"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_root"]
+radius = 0.55
+height = 2.2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hide_sickly"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.38, 0.36, 0.34, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wool_matted"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.52, 0.48, 0.40, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bone"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.68, 0.65, 0.58, 1)
+shader_parameter/roughness_val = 0.9
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hoof"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.14, 0.12, 0.11, 1)
+shader_parameter/roughness_val = 0.8
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_torso"]
+material = SubResource("ShaderMaterial_hide_sickly")
+size = Vector3(0.9, 0.85, 1.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ribs"]
+material = SubResource("ShaderMaterial_wool_matted")
+size = Vector3(0.95, 0.9, 0.8)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_leg"]
+material = SubResource("ShaderMaterial_hide_sickly")
+top_radius = 0.12
+bottom_radius = 0.08
+height = 1.2
+radial_segments = 6
+
+[sub_resource type="BoxMesh" id="BoxMesh_hoof"]
+material = SubResource("ShaderMaterial_hoof")
+size = Vector3(0.18, 0.16, 0.22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_neck_base"]
+material = SubResource("ShaderMaterial_hide_sickly")
+size = Vector3(0.38, 1.1, 0.42)
+
+[sub_resource type="BoxMesh" id="BoxMesh_neck_upper"]
+material = SubResource("ShaderMaterial_hide_sickly")
+size = Vector3(0.32, 0.9, 0.35)
+
+[sub_resource type="BoxMesh" id="BoxMesh_skull"]
+material = SubResource("ShaderMaterial_bone")
+size = Vector3(0.42, 0.45, 0.85)
+
+[sub_resource type="BoxMesh" id="BoxMesh_jaw"]
+material = SubResource("ShaderMaterial_bone")
+size = Vector3(0.36, 0.18, 0.75)
+
+[sub_resource type="BoxMesh" id="BoxMesh_collar"]
+material = SubResource("ShaderMaterial_hoof")
+size = Vector3(0.48, 0.12, 0.48)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_attack"]
+radius = 1.8
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_head"]
+radius = 0.65
+
+
+[node name="Jarjacha" type="CharacterBody3D" groups=["enemy"]]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 1.0, 0)
+shape = SubResource("CapsuleShape3D_root")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Torso" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+mesh = SubResource("BoxMesh_torso")
+
+[node name="RibsMatted" type="MeshInstance3D" parent="Visual/Torso"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.2)
+mesh = SubResource("BoxMesh_ribs")
+
+[node name="LegFL" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.38, 0.6, -0.65)
+mesh = SubResource("CylinderMesh_leg")
+
+[node name="HoofFL" type="MeshInstance3D" parent="Visual/LegFL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.55, 0.04)
+mesh = SubResource("BoxMesh_hoof")
+
+[node name="LegFR" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.38, 0.6, -0.65)
+mesh = SubResource("CylinderMesh_leg")
+
+[node name="HoofFR" type="MeshInstance3D" parent="Visual/LegFR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.55, 0.04)
+mesh = SubResource("BoxMesh_hoof")
+
+[node name="LegBL" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.38, 0.6, 0.65)
+mesh = SubResource("CylinderMesh_leg")
+
+[node name="HoofBL" type="MeshInstance3D" parent="Visual/LegBL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.55, 0.04)
+mesh = SubResource("BoxMesh_hoof")
+
+[node name="LegBR" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.38, 0.6, 0.65)
+mesh = SubResource("CylinderMesh_leg")
+
+[node name="HoofBR" type="MeshInstance3D" parent="Visual/LegBR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.55, 0.04)
+mesh = SubResource("BoxMesh_hoof")
+
+[node name="Neck" type="Node3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, -0.34202, 0, 0.34202, 0.939693, 0, 1.4, -0.85)
+
+[node name="NeckBaseMesh" type="MeshInstance3D" parent="Visual/Neck"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+mesh = SubResource("BoxMesh_neck_base")
+
+[node name="NeckUpperMesh" type="MeshInstance3D" parent="Visual/Neck"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 1.35, -0.15)
+mesh = SubResource("BoxMesh_neck_upper")
+
+[node name="TetherPoint" type="Marker3D" parent="Visual/Neck"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+
+[node name="TetherCollar" type="MeshInstance3D" parent="Visual/Neck/TetherPoint"]
+mesh = SubResource("BoxMesh_collar")
+
+[node name="Head" type="Node3D" parent="Visual/Neck"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 1.85, -0.35)
+
+[node name="SkullMesh" type="MeshInstance3D" parent="Visual/Neck/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.25)
+mesh = SubResource("BoxMesh_skull")
+
+[node name="Jaw" type="MeshInstance3D" parent="Visual/Neck/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, -0.22)
+mesh = SubResource("BoxMesh_jaw")
+
+[node name="EyeLeft" type="OmniLight3D" parent="Visual/Neck/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18, 0.12, -0.45)
+light_color = Color(1, 0.75, 0.2, 1)
+light_energy = 0.8
+omni_range = 1.8
+
+[node name="EyeRight" type="OmniLight3D" parent="Visual/Neck/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18, 0.12, -0.45)
+light_color = Color(1, 0.75, 0.2, 1)
+light_energy = 0.8
+omni_range = 1.8
+
+[node name="HeadArea" type="Area3D" parent="Visual/Neck/Head" groups=["enemy_head"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -0.25)
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Visual/Neck/Head/HeadArea"]
+shape = SubResource("SphereShape3D_head")
+
+[node name="AttackArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, -1.8)
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AttackArea"]
+shape = SubResource("SphereShape3D_attack")
+
+[node name="HealthBar3D" parent="." instance=ExtResource("3_healthbar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, -0.4)

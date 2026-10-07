@@ -1,0 +1,255 @@
+[gd_scene format=3 uid="uid://b8y4g2v6f1k3l"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_script"]
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="2_ps2shader"]
+[ext_resource type="Script" path="res://scripts/wall_hug.gd" id="3_wall_hug"]
+[ext_resource type="Script" path="res://scripts/player_lantern.gd" id="4_lantern"]
+[ext_resource type="PackedScene" path="res://scenes/ui/mobile_controls.tscn" id="5_mobile"]
+
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_body"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.48, 0.28, 0.22, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
+material = SubResource("ShaderMaterial_body")
+radius = 0.38
+height = 1.75
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_accent"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.85, 0.72, 0.48, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_visor"]
+material = SubResource("ShaderMaterial_accent")
+size = Vector3(0.35, 0.16, 0.22)
+
+[sub_resource type="LabelSettings" id="LabelSettings_prompt"]
+font_size = 14
+outline_size = 3
+outline_color = Color(0, 0, 0, 0.9)
+
+[sub_resource type="LabelSettings" id="LabelSettings_hud"]
+font_size = 13
+font_color = Color(0.9, 0.88, 0.82, 1)
+outline_size = 3
+outline_color = Color(0, 0, 0, 0.9)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_wallcast"]
+radius = 0.38
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combo"]
+bg_color = Color(0.18, 0.04, 0.04, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.82, 0.18, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+expand_margin_left = 6.0
+expand_margin_top = 4.0
+expand_margin_right = 6.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_combo_pressed"]
+bg_color = Color(0.45, 0.1, 0.1, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 0.6, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+expand_margin_left = 6.0
+expand_margin_top = 4.0
+expand_margin_right = 6.0
+expand_margin_bottom = 4.0
+
+[node name="Player" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 1
+floor_constant_speed = true
+floor_snap_length = 0.25
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="WallCast" type="ShapeCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+enabled = true
+shape = SubResource("SphereShape3D_wallcast")
+target_position = Vector3(0, 0, -0.65)
+collision_mask = 1
+max_results = 1
+
+[node name="WallHug" type="Node" parent="."]
+script = ExtResource("3_wall_hug")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
+mesh = SubResource("CapsuleMesh_body")
+
+[node name="FacingIndicator" type="MeshInstance3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -0.32)
+mesh = SubResource("BoxMesh_visor")
+
+
+[node name="HandPoint" type="Marker3D" parent="Visual"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.38, 0.95, -0.35)
+
+[node name="MuzzleFlash" type="OmniLight3D" parent="Visual/HandPoint"]
+visible = false
+light_color = Color(1, 0.82, 0.35, 1)
+light_energy = 3.5
+omni_range = 6.0
+
+[node name="CameraPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0, 0)
+collision_mask = 1
+spring_length = 2.8
+margin = 0.15
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot/SpringArm3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+current = true
+fov = 52.0
+near = 0.05
+
+[node name="Lantern" type="Node3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0.22, 0, -0.1)
+script = ExtResource("4_lantern")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="CameraPivot/Lantern"]
+light_color = Color(1, 0.82, 0.52, 1)
+light_energy = 1.8
+shadow_enabled = true
+spot_range = 25.0
+spot_angle = 38.0
+spot_attenuation = 1.4
+light_volumetric_fog_energy = 0.6
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="PromptLabel" type="Label" parent="HUD"]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -45.0
+offset_right = 160.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "[E] Interactuar"
+label_settings = SubResource("LabelSettings_prompt")
+horizontal_alignment = 1
+
+[node name="EquippedLabel" type="Label" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -28.0
+offset_right = 240.0
+offset_bottom = -8.0
+grow_vertical = 0
+text = "Arma: Desarmado"
+label_settings = SubResource("LabelSettings_hud")
+
+[node name="Crosshair" type="ColorRect" parent="HUD"]
+visible = false
+mouse_filter = 2
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.75)
+
+[node name="HugIndicator" type="Label" parent="HUD"]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -66.0
+offset_right = 100.0
+offset_bottom = -50.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "[Q] Pegado a muro | [F] Asomarse"
+label_settings = SubResource("LabelSettings_prompt")
+horizontal_alignment = 1
+
+[node name="HealthBar" type="ProgressBar" parent="HUD"]
+mouse_filter = 2
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 212.0
+offset_bottom = 24.0
+value = 100.0
+show_percentage = false
+
+[node name="HealthLabel" type="Label" parent="HUD"]
+mouse_filter = 2
+offset_left = 12.0
+offset_top = 26.0
+offset_right = 112.0
+offset_bottom = 42.0
+text = "VIDA: 100"
+label_settings = SubResource("LabelSettings_hud")
+
+[node name="MobileControls" parent="HUD" instance=ExtResource("5_mobile")]
+
+[node name="ComboButton" type="Button" parent="HUD"]
+visible = false
+offset_right = 144.0
+offset_bottom = 42.0
+pivot_offset = Vector2(72, 21)
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_combo")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_combo_pressed")
+text = "💥 ¡EMPUJAR!
+[ TOCA O 'F' ]"
+
+

@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://bv5m1x8q4n2qa"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_stone_base"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.35, 0.36, 0.38, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_adobe_mid"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.48, 0.32, 0.22, 1)
+shader_parameter/roughness_val = 0.98
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_straw_cap"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.56, 0.48, 0.33, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_stone_foundation"]
+material = SubResource("ShaderMaterial_stone_base")
+size = Vector3(8.0, 1.2, 0.9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_full"]
+size = Vector3(8.0, 3.4, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_adobe_body"]
+material = SubResource("ShaderMaterial_adobe_mid")
+size = Vector3(8.0, 2.0, 0.75)
+
+[sub_resource type="BoxMesh" id="BoxMesh_straw_coping"]
+material = SubResource("ShaderMaterial_straw_cap")
+size = Vector3(8.2, 0.28, 0.95)
+
+[node name="MuroPerimetroAdobe" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+
+[node name="StoneFoundation" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+mesh = SubResource("BoxMesh_stone_foundation")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+shape = SubResource("BoxShape3D_wall_full")
+
+[node name="AdobeBody" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+mesh = SubResource("BoxMesh_adobe_body")
+
+[node name="StrawCoping" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
+mesh = SubResource("BoxMesh_straw_coping")

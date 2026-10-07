@@ -1,0 +1,123 @@
+[gd_scene format=3 uid="uid://c6j2m4r8t0x3p"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_stone_tier1"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.35, 0.36, 0.38, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_stone_tier2"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.44, 0.42, 0.38, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ribbon"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.68, 0.22, 0.18, 1)
+shader_parameter/roughness_val = 0.9
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tier1"]
+material = SubResource("ShaderMaterial_stone_tier1")
+top_radius = 1.2
+bottom_radius = 1.4
+height = 0.35
+radial_segments = 8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tier2"]
+material = SubResource("ShaderMaterial_stone_tier2")
+top_radius = 0.95
+bottom_radius = 1.15
+height = 0.35
+radial_segments = 8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tier3"]
+material = SubResource("ShaderMaterial_stone_tier1")
+top_radius = 0.70
+bottom_radius = 0.90
+height = 0.35
+radial_segments = 7
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tier4"]
+material = SubResource("ShaderMaterial_stone_tier2")
+top_radius = 0.45
+bottom_radius = 0.65
+height = 0.35
+radial_segments = 6
+
+[sub_resource type="BoxMesh" id="BoxMesh_capstone"]
+material = SubResource("ShaderMaterial_stone_tier1")
+size = Vector3(0.45, 0.5, 0.4)
+
+[sub_resource type="TorusMesh" id="TorusMesh_ribbon"]
+material = SubResource("ShaderMaterial_ribbon")
+inner_radius = 0.72
+outer_radius = 0.88
+rings = 6
+ring_segments = 6
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_cairn"]
+height = 1.8
+radius = 1.4
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_interact"]
+radius = 2.8
+
+[node name="Apacheta" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+
+[node name="Tier1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+mesh = SubResource("CylinderMesh_tier1")
+
+[node name="Tier2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.92388, 0, 0.382683, 0, 1, 0, -0.382683, 0, 0.92388, 0, 0.525, 0)
+mesh = SubResource("CylinderMesh_tier2")
+
+[node name="Tier3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 0, 0.875, 0)
+mesh = SubResource("CylinderMesh_tier3")
+
+[node name="Tier4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.225, 0)
+mesh = SubResource("CylinderMesh_tier4")
+
+[node name="Capstone" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.866025, 0.25, 0.433013, 0, 0.866025, -0.5, -0.5, 0.433013, 0.75, 0, 1.55, 0)
+mesh = SubResource("BoxMesh_capstone")
+
+[node name="RibbonOffering" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0.88, 0)
+mesh = SubResource("TorusMesh_ribbon")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CylinderShape3D_cairn")
+
+[node name="WarmBeacon" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+light_color = Color(1, 0.78, 0.48, 1)
+light_energy = 0.8
+omni_range = 4.2
+omni_attenuation = 1.4
+
+[node name="InteractionArea" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+shape = SubResource("SphereShape3D_interact")

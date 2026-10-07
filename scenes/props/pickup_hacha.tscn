@@ -1,0 +1,76 @@
+[gd_scene format=3 uid="uid://c8m3v1yan4k6q"]
+
+[ext_resource type="Script" path="res://scripts/interactable_pickup.gd" id="1_script"]
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="2_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_handle"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.35, 0.24, 0.16, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iron_blade"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.42, 0.44, 0.46, 1)
+shader_parameter/roughness_val = 0.8
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_stump"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.28, 0.20, 0.14, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_handle"]
+material = SubResource("ShaderMaterial_handle")
+top_radius = 0.03
+bottom_radius = 0.03
+height = 0.85
+radial_segments = 5
+
+[sub_resource type="BoxMesh" id="BoxMesh_blade"]
+material = SubResource("ShaderMaterial_iron_blade")
+size = Vector3(0.06, 0.22, 0.28)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_stump"]
+material = SubResource("ShaderMaterial_stump")
+top_radius = 0.35
+bottom_radius = 0.4
+height = 0.65
+radial_segments = 7
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_interact"]
+radius = 1.8
+
+[node name="PickupHacha" type="Area3D"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_script")
+item_type = 1
+item_name = "Hacha"
+prompt_message = "[E] Tomar Hacha de Leñador"
+
+[node name="LogStump" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.325, 0)
+mesh = SubResource("CylinderMesh_stump")
+
+[node name="AxeHandle" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0.12, 0.9, 0)
+mesh = SubResource("CylinderMesh_handle")
+
+[node name="AxeBlade" type="MeshInstance3D" parent="AxeHandle"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, -0.06)
+mesh = SubResource("BoxMesh_blade")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_interact")

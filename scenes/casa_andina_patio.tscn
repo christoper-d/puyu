@@ -1,0 +1,301 @@
+[gd_scene format=3 uid="uid://dp5k1nav3b7x8"]
+
+[ext_resource type="PackedScene" uid="uid://b8y4g2v6f1k3l" path="res://scenes/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" uid="uid://d30am4k1f8q2w" path="res://scenes/ps2_postprocess.tscn" id="2_postprocess"]
+[ext_resource type="PackedScene" uid="uid://cx7m1v4b8q2p0" path="res://scenes/architecture/casa_cocina.tscn" id="3_cocina"]
+[ext_resource type="PackedScene" uid="uid://cy8m2v5caq3p1" path="res://scenes/architecture/casa_dormitorio.tscn" id="4_dormitorio"]
+[ext_resource type="PackedScene" uid="uid://c0m3v6b0q4p2" path="res://scenes/architecture/casa_almacen.tscn" id="5_almacen"]
+[ext_resource type="PackedScene" uid="uid://bv5m1x8q4n2qa" path="res://scenes/architecture/muro_perimetro_adobe.tscn" id="6_muro"]
+[ext_resource type="PackedScene" uid="uid://dp7b3m8q5k1x2" path="res://scenes/architecture/escalinata_piedra.tscn" id="7_escalinata"]
+[ext_resource type="PackedScene" uid="uid://bakcp0n05trh0" path="res://scenes/architecture/pirca_muro.tscn" id="8_pirca"]
+[ext_resource type="PackedScene" uid="uid://c6j2m4r8t0x3p" path="res://scenes/architecture/apacheta.tscn" id="9_apacheta"]
+[ext_resource type="PackedScene" uid="uid://de4p7b1yam5k3" path="res://scenes/props/pila_lena.tscn" id="10_lena"]
+[ext_resource type="Shader" uid="uid://di1w240hiwkp5" path="res://shaders/ps2_lit.gdshader" id="11_ps2shader"]
+[ext_resource type="PackedScene" uid="uid://b6lam1v4x8n2p" path="res://scenes/enemies/jarjacha.tscn" id="12_jarjacha"]
+[ext_resource type="PackedScene" uid="uid://c3m7x1waq5k2p" path="res://scenes/props/poste_amarrar.tscn" id="13_poste"]
+[ext_resource type="PackedScene" uid="uid://b7v2nax4n1k5p" path="res://scenes/props/pickup_soga.tscn" id="14_soga"]
+[ext_resource type="PackedScene" uid="uid://c8m3v1yan4k6q" path="res://scenes/props/pickup_hacha.tscn" id="15_hacha"]
+[ext_resource type="PackedScene" uid="uid://d1m4v2x8n5k7r" path="res://scenes/props/pickup_escopeta.tscn" id="16_escopeta"]
+[ext_resource type="PackedScene" path="res://scenes/architecture/callejon_pasadizo.tscn" id="17_callejon"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.02, 0.02, 0.04, 1)
+sky_horizon_color = Color(0.06, 0.04, 0.03, 1)
+ground_bottom_color = Color(0.01, 0.01, 0.01, 1)
+ground_horizon_color = Color(0.06, 0.04, 0.03, 1)
+
+[sub_resource type="Sky" id="Sky_env"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_level"]
+background_mode = 2
+sky = SubResource("Sky_env")
+ambient_light_source = 1
+ambient_light_color = Color(0.04, 0.06, 0.1, 1)
+ambient_light_energy = 0.12
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.28, 0.22, 0.12, 1)
+fog_density = 0.9
+fog_depth_begin = 8.0
+fog_depth_end = 28.0
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.04
+volumetric_fog_albedo = Color(0.55, 0.42, 0.22, 1)
+volumetric_fog_emission = Color(0.04, 0.02, 0, 1)
+volumetric_fog_emission_energy = 0.08
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_earth_main"]
+render_priority = 0
+shader = ExtResource("11_ps2shader")
+shader_parameter/albedo_color = Color(0.28, 0.25, 0.22, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground_lower"]
+material = SubResource("ShaderMaterial_earth_main")
+size = Vector3(34, 2, 26)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground_lower"]
+size = Vector3(34, 2, 26)
+
+[sub_resource type="BoxMesh" id="BoxMesh_terrace_upper"]
+material = SubResource("ShaderMaterial_earth_main")
+size = Vector3(22, 2, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_terrace_upper"]
+size = Vector3(22, 2, 14)
+
+[sub_resource type="PrismMesh" id="PrismMesh_slope_mound"]
+material = SubResource("ShaderMaterial_earth_main")
+left_to_right = 0.2
+size = Vector3(10, 1.8, 8)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_slope"]
+points = PackedVector3Array(-5, 0, -4, 5, 0, -4, -3, 1.8, -4, -5, 0, 4, 5, 0, 4, -3, 1.8, 4)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_stone_patch"]
+render_priority = 0
+shader = ExtResource("11_ps2shader")
+shader_parameter/albedo_color = Color(0.35, 0.35, 0.36, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_stone_outcrop"]
+material = SubResource("ShaderMaterial_stone_patch")
+size = Vector3(3.2, 0.7, 2.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_stone_outcrop"]
+size = Vector3(3.2, 0.7, 2.8)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gate_wood"]
+render_priority = 0
+shader = ExtResource("11_ps2shader")
+shader_parameter/albedo_color = Color(0.24, 0.17, 0.12, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_gate_beam"]
+material = SubResource("ShaderMaterial_gate_wood")
+size = Vector3(3.8, 0.25, 0.2)
+
+[node name="CasaAndinaPatio" type="Node3D" unique_id=928432601]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=579719211]
+environment = SubResource("Environment_level")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=649089878]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 25, 0)
+light_color = Color(0.68, 0.74, 0.9, 1)
+light_energy = 0.06
+shadow_enabled = true
+shadow_opacity = 0.5
+
+[node name="Terrain" type="Node3D" parent="." unique_id=1835762460]
+
+[node name="PatioBajo" type="StaticBody3D" parent="Terrain" unique_id=1032918094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 3)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/PatioBajo" unique_id=781928304]
+mesh = SubResource("BoxMesh_ground_lower")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/PatioBajo" unique_id=1695524708]
+shape = SubResource("BoxShape3D_ground_lower")
+
+[node name="TerrazaAltaDormitorio" type="StaticBody3D" parent="Terrain" unique_id=900793390]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0.6, -11)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/TerrazaAltaDormitorio" unique_id=1133684082]
+mesh = SubResource("BoxMesh_terrace_upper")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/TerrazaAltaDormitorio" unique_id=88379480]
+shape = SubResource("BoxShape3D_terrace_upper")
+
+[node name="RampaDesnivel" type="StaticBody3D" parent="Terrain" unique_id=459799250]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 7.5, 0, -5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/RampaDesnivel" unique_id=1602583112]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("PrismMesh_slope_mound")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/RampaDesnivel" unique_id=1643030049]
+shape = SubResource("ConvexPolygonShape3D_slope")
+
+[node name="AfloramientoRocoso" type="StaticBody3D" parent="Terrain" unique_id=1170742648]
+transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 1.5, 0.2, 5.5)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/AfloramientoRocoso" unique_id=1929083682]
+mesh = SubResource("BoxMesh_stone_outcrop")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/AfloramientoRocoso" unique_id=1758714119]
+shape = SubResource("BoxShape3D_stone_outcrop")
+
+[node name="Houses" type="Node3D" parent="." unique_id=416131875]
+
+[node name="CasaCocina" parent="Houses" unique_id=1630855111 instance=ExtResource("3_cocina")]
+transform = Transform3D(-0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, -0.258819, 9.8, 0, 1.2)
+
+[node name="CasaDormitorio" parent="Houses" unique_id=2080921599 instance=ExtResource("4_dormitorio")]
+transform = Transform3D(0.984808, 0, 0.173648, 0, 1, 0, -0.173648, 0, 0.984808, -6.5, 1.6, -11.5)
+
+[node name="CasaAlmacen" parent="Houses" unique_id=1198634286 instance=ExtResource("5_almacen")]
+transform = Transform3D(-0.0871557, 0, 0.996195, 0, 1, 0, -0.996195, 0, -0.0871557, -10.2, 0, 2.5)
+
+[node name="TerraceConnections" type="Node3D" parent="." unique_id=565216846]
+
+[node name="PircaTerraza" parent="TerraceConnections" unique_id=468057780 instance=ExtResource("8_pirca")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 0, -4.2)
+
+[node name="EscalinataDormitorio" parent="TerraceConnections" unique_id=1010326211 instance=ExtResource("7_escalinata")]
+transform = Transform3D(1, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -4.5, 0, -4.2)
+
+[node name="PircaTerrazaDerecha" parent="TerraceConnections" unique_id=1643862814 instance=ExtResource("8_pirca")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -4.2)
+
+[node name="PerimeterWalls" type="Node3D" parent="." unique_id=2033756439]
+
+[node name="WallNorth1" parent="PerimeterWalls" unique_id=324232244 instance=ExtResource("6_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1.6, -18.2)
+
+[node name="WallNorth2" parent="PerimeterWalls" unique_id=856188092 instance=ExtResource("6_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, -18.2)
+
+[node name="WallNorth3" parent="PerimeterWalls" unique_id=68275581 instance=ExtResource("6_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1.6, -18.2)
+
+[node name="WallSouth1" parent="PerimeterWalls" unique_id=483931860 instance=ExtResource("6_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 0, 14.5)
+
+[node name="WallSouth2" parent="PerimeterWalls" unique_id=122153444 instance=ExtResource("6_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 0, 14.5)
+
+[node name="TrancaMadera1" type="MeshInstance3D" parent="PerimeterWalls" unique_id=1324953279]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 14.5)
+mesh = SubResource("BoxMesh_gate_beam")
+
+[node name="TrancaMadera2" type="MeshInstance3D" parent="PerimeterWalls" unique_id=512917542]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 14.5)
+mesh = SubResource("BoxMesh_gate_beam")
+
+[node name="WallWest1" parent="PerimeterWalls" unique_id=1696259897 instance=ExtResource("6_muro")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -15.5, 0, 8)
+
+[node name="WallWest2" parent="PerimeterWalls" unique_id=1464201801 instance=ExtResource("6_muro")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -15.5, 0, 0)
+
+[node name="WallWest3" parent="PerimeterWalls" unique_id=2018765083 instance=ExtResource("6_muro")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -15.5, 1.6, -8)
+
+[node name="WallWest4" parent="PerimeterWalls" unique_id=389372754 instance=ExtResource("6_muro")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -15.5, 1.6, -15)
+
+[node name="WallEast1" parent="PerimeterWalls" unique_id=1809936035 instance=ExtResource("6_muro")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 15.5, 0, 8)
+
+[node name="WallEast2" parent="PerimeterWalls" unique_id=116520967 instance=ExtResource("6_muro")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 15.5, 0, 0)
+
+[node name="WallEast3" parent="PerimeterWalls" unique_id=626838576 instance=ExtResource("6_muro")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 15.5, 1, -8)
+
+[node name="WallEast4" parent="PerimeterWalls" unique_id=1295439432 instance=ExtResource("6_muro")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 15.5, 1.6, -15)
+
+[node name="PatioProps" type="Node3D" parent="." unique_id=1051154127]
+
+[node name="Apacheta" parent="PatioProps" unique_id=1336308716 instance=ExtResource("9_apacheta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 8)
+
+[node name="LenaPatio" parent="PatioProps" unique_id=1858887484 instance=ExtResource("10_lena")]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -5.5, 0, 1.5)
+
+[node name="PostePatio1" parent="PatioProps" unique_id=223220512 instance=ExtResource("13_poste")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 4)
+
+[node name="PostePatio2" parent="PatioProps" unique_id=1262761917 instance=ExtResource("13_poste")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -1)
+
+[node name="PickupSoga" parent="PatioProps" unique_id=1290007287 instance=ExtResource("14_soga")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8, 0.1, 3.2)
+
+[node name="PickupHacha" parent="PatioProps" unique_id=1133227696 instance=ExtResource("15_hacha")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8, 0, -0.2)
+
+[node name="PickupEscopeta" parent="PatioProps" unique_id=265492058 instance=ExtResource("16_escopeta")]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -5.2, 1.8, -10.5)
+
+[node name="Jarjacha" parent="." unique_id=2052439738 instance=ExtResource("12_jarjacha")]
+transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, 5, 0.1, 1.5)
+
+[node name="Player" parent="." unique_id=1678163129 instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 7.5)
+
+[node name="PS2PostProcess" parent="." unique_id=1707560675 instance=ExtResource("2_postprocess")]
+
+[node name="PatioLighting" type="Node3D" parent="." unique_id=707161484]
+
+[node name="PosteLuzPatio1" type="Node3D" parent="PatioLighting" unique_id=1986199862]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, 6)
+
+[node name="LuzAmbar1" type="OmniLight3D" parent="PatioLighting/PosteLuzPatio1" unique_id=2088574948]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, 0)
+light_color = Color(1, 0.68, 0.22, 1)
+light_energy = 2.4
+light_volumetric_fog_energy = 1.5
+shadow_enabled = true
+omni_range = 10.0
+
+[node name="PosteLuzPatio2" type="Node3D" parent="PatioLighting" unique_id=1404927680]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -5)
+
+[node name="LuzAmbar2" type="OmniLight3D" parent="PatioLighting/PosteLuzPatio2" unique_id=502152498]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, 0)
+light_color = Color(1, 0.65, 0.2, 1)
+light_energy = 2.0
+light_volumetric_fog_energy = 1.2
+shadow_enabled = true
+omni_range = 9.0
+
+[node name="PosteLuzPatio3" type="Node3D" parent="PatioLighting" unique_id=22676061]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -2)
+
+[node name="LuzAmbar3" type="OmniLight3D" parent="PatioLighting/PosteLuzPatio3" unique_id=630480945]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, 0)
+light_color = Color(1, 0.7, 0.25, 1)
+light_energy = 1.8
+shadow_enabled = true
+omni_range = 8.5
+
+[node name="Callejones" type="Node3D" parent="." unique_id=675235951]
+
+[node name="CallejonNorte" parent="Callejones" unique_id=246590112 instance=ExtResource("17_callejon")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -18)
+
+[node name="CallejonEste" parent="Callejones" unique_id=711595070 instance=ExtResource("17_callejon")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 16, 0, -5)

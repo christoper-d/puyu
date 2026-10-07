@@ -1,0 +1,145 @@
+[gd_scene format=3 uid="uid://be4k8x1n2v7na"]
+
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/ps2_postprocess.tscn" id="2_postprocess"]
+[ext_resource type="PackedScene" path="res://scenes/architecture/casa_adobe.tscn" id="3_casa"]
+[ext_resource type="PackedScene" path="res://scenes/architecture/pirca_muro.tscn" id="4_pirca"]
+[ext_resource type="PackedScene" path="res://scenes/architecture/escalinata_piedra.tscn" id="5_escalinata"]
+[ext_resource type="PackedScene" path="res://scenes/architecture/apacheta.tscn" id="6_apacheta"]
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="7_ps2shader"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.34, 0.40, 0.48, 1)
+sky_horizon_color = Color(0.55, 0.58, 0.64, 1)
+ground_bottom_color = Color(0.18, 0.18, 0.20, 1)
+ground_horizon_color = Color(0.55, 0.58, 0.64, 1)
+
+[sub_resource type="Sky" id="Sky_env"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_level"]
+background_mode = 2
+sky = SubResource("Sky_env")
+ambient_light_source = 3
+ambient_light_color = Color(0.58, 0.62, 0.68, 1)
+ambient_light_sky_contribution = 0.5
+tonemap_mode = 0
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.52, 0.56, 0.64, 1)
+fog_density = 1.0
+fog_depth_begin = 5.0
+fog_depth_end = 34.0
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.05
+volumetric_fog_albedo = Color(0.62, 0.66, 0.74, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
+render_priority = 0
+shader = ExtResource("7_ps2shader")
+shader_parameter/albedo_color = Color(0.24, 0.25, 0.26, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground_plaza"]
+material = SubResource("ShaderMaterial_ground")
+size = Vector3(26, 2, 24)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground_plaza"]
+size = Vector3(26, 2, 24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_terrace_mid"]
+material = SubResource("ShaderMaterial_ground")
+size = Vector3(24, 2, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_terrace_mid"]
+size = Vector3(24, 2, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_terrace_high"]
+material = SubResource("ShaderMaterial_ground")
+size = Vector3(20, 2, 18)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_terrace_high"]
+size = Vector3(20, 2, 18)
+
+[node name="PuebloCallejon" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_level")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 30, 0)
+light_color = Color(0.88, 0.86, 0.82, 1)
+light_energy = 1.05
+shadow_enabled = true
+
+[node name="Terrain" type="Node3D" parent="."]
+
+[node name="PlazaBaja" type="StaticBody3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 4)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/PlazaBaja"]
+mesh = SubResource("BoxMesh_ground_plaza")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/PlazaBaja"]
+shape = SubResource("BoxShape3D_ground_plaza")
+
+[node name="TerrazaMedia" type="StaticBody3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -14)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/TerrazaMedia"]
+mesh = SubResource("BoxMesh_terrace_mid")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/TerrazaMedia"]
+shape = SubResource("BoxShape3D_terrace_mid")
+
+[node name="TerrazaAlta" type="StaticBody3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 3.8, -30)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Terrain/TerrazaAlta"]
+mesh = SubResource("BoxMesh_terrace_high")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/TerrazaAlta"]
+shape = SubResource("BoxShape3D_terrace_high")
+
+[node name="Architecture" type="Node3D" parent="."]
+
+[node name="PircaFrentePlaza" parent="Architecture" instance=ExtResource("4_pirca")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 0, -4.2)
+
+[node name="PircaFrentePlaza2" parent="Architecture" instance=ExtResource("4_pirca")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, -4.2)
+
+[node name="EscalinataPlaza" parent="Architecture" instance=ExtResource("5_escalinata")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.2)
+
+[node name="CasaIzquierda1" parent="Architecture" instance=ExtResource("3_casa")]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -6.8, 2.4, -13)
+
+[node name="CasaDerecha1" parent="Architecture" instance=ExtResource("3_casa")]
+transform = Transform3D(0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, 0.965926, 6.8, 2.4, -15)
+
+[node name="EscalinataMedia" parent="Architecture" instance=ExtResource("5_escalinata")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0, 2.4, -22)
+
+[node name="PircaMedia" parent="Architecture" instance=ExtResource("4_pirca")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 2.4, -22)
+
+[node name="CasaAlta" parent="Architecture" instance=ExtResource("3_casa")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -4.5, 4.8, -32)
+
+[node name="CasaAltaTorre" parent="Architecture" instance=ExtResource("3_casa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 4.8, -34)
+
+[node name="PircaAltaBorde" parent="Architecture" instance=ExtResource("4_pirca")]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -10.5, 4.8, -28)
+
+[node name="ApachetaInicio" parent="." instance=ExtResource("6_apacheta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, 3.5)
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 8.0)
+
+[node name="PS2PostProcess" parent="." instance=ExtResource("2_postprocess")]

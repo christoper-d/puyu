@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://cf9k3m2x7w1b8"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bed_wood"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.30, 0.22, 0.16, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_straw"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.60, 0.52, 0.35, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blanket_red"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.62, 0.18, 0.24, 1)
+shader_parameter/roughness_val = 0.9
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blanket_stripe"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.18, 0.48, 0.52, 1)
+shader_parameter/roughness_val = 0.9
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_blanket_gold"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.78, 0.58, 0.18, 1)
+shader_parameter/roughness_val = 0.9
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_base"]
+material = SubResource("ShaderMaterial_bed_wood")
+size = Vector3(1.4, 0.3, 2.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bed"]
+size = Vector3(1.4, 0.5, 2.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_straw_mattress"]
+material = SubResource("ShaderMaterial_straw")
+size = Vector3(1.3, 0.25, 2.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_blanket_main"]
+material = SubResource("ShaderMaterial_blanket_red")
+size = Vector3(1.32, 0.08, 1.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_stripe_teal"]
+material = SubResource("ShaderMaterial_blanket_stripe")
+size = Vector3(1.34, 0.09, 0.22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_stripe_gold"]
+material = SubResource("ShaderMaterial_blanket_gold")
+size = Vector3(1.34, 0.09, 0.14)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pillow"]
+material = SubResource("ShaderMaterial_straw")
+size = Vector3(1.1, 0.18, 0.45)
+
+[node name="CamaPaja" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+
+[node name="FrameBase" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+mesh = SubResource("BoxMesh_base")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+shape = SubResource("BoxShape3D_bed")
+
+[node name="StrawMattress" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.38, 0)
+mesh = SubResource("BoxMesh_straw_mattress")
+
+[node name="BlanketMain" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.51, 0.3)
+mesh = SubResource("BoxMesh_blanket_main")
+
+[node name="StripeTeal" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52, 0.2)
+mesh = SubResource("BoxMesh_stripe_teal")
+
+[node name="StripeGold" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52, -0.15)
+mesh = SubResource("BoxMesh_stripe_gold")
+
+[node name="Pillow" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.54, -0.75)
+mesh = SubResource("BoxMesh_pillow")

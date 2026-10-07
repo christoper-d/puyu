@@ -1,0 +1,156 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fur"]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/albedo_color = Color(0.85, 0.55, 0.2, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_eye"]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/albedo_color = Color(0.05, 0.05, 0.05, 1)
+shader_parameter/roughness_val = 0.2
+shader_parameter/jitter_enabled = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_chullo_base"]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/albedo_color = Color(0.85, 0.8, 0.6, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_chullo_red"]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/albedo_color = Color(0.65, 0.15, 0.2, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_chullo_blue"]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/albedo_color = Color(0.2, 0.3, 0.6, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+material = SubResource("ShaderMaterial_fur")
+radius = 0.45
+height = 0.75
+radial_segments = 12
+rings = 6
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_body"]
+material = SubResource("ShaderMaterial_fur")
+top_radius = 0.35
+bottom_radius = 0.45
+height = 0.6
+radial_segments = 10
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_arm"]
+material = SubResource("ShaderMaterial_fur")
+radius = 0.12
+height = 0.45
+radial_segments = 8
+rings = 2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_leg"]
+material = SubResource("ShaderMaterial_fur")
+top_radius = 0.15
+bottom_radius = 0.12
+height = 0.3
+radial_segments = 8
+
+[sub_resource type="PrismMesh" id="PrismMesh_ear"]
+material = SubResource("ShaderMaterial_fur")
+size = Vector3(0.4, 0.4, 0.1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_eye"]
+material = SubResource("ShaderMaterial_eye")
+radius = 0.08
+height = 0.16
+radial_segments = 8
+rings = 4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hat_base"]
+material = SubResource("ShaderMaterial_chullo_base")
+top_radius = 0.42
+bottom_radius = 0.47
+height = 0.25
+radial_segments = 12
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_hat_cone"]
+material = SubResource("ShaderMaterial_chullo_red")
+top_radius = 0.0
+bottom_radius = 0.42
+height = 0.45
+radial_segments = 12
+
+[node name="PlayerCatModel" type="Node3D"]
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+mesh = SubResource("CylinderMesh_body")
+
+[node name="LegL" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0.15, 0.05)
+mesh = SubResource("CylinderMesh_leg")
+
+[node name="LegR" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0.15, 0.05)
+mesh = SubResource("CylinderMesh_leg")
+
+[node name="ArmL" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 0, 0, 1, -0.42, 0.4, 0)
+mesh = SubResource("CapsuleMesh_arm")
+
+[node name="ArmR" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.965926, -0.258819, 0, 0.258819, 0.965926, 0, 0, 0, 1, 0.42, 0.4, 0)
+mesh = SubResource("CapsuleMesh_arm")
+
+[node name="HeadPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+
+[node name="Head" type="MeshInstance3D" parent="HeadPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+mesh = SubResource("SphereMesh_head")
+
+[node name="EarL" type="MeshInstance3D" parent="HeadPivot"]
+transform = Transform3D(0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0, 1, -0.45, 0.25, -0.1)
+mesh = SubResource("PrismMesh_ear")
+
+[node name="EarR" type="MeshInstance3D" parent="HeadPivot"]
+transform = Transform3D(0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0, 1, 0.45, 0.25, -0.1)
+mesh = SubResource("PrismMesh_ear")
+
+[node name="EyeL" type="MeshInstance3D" parent="HeadPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0.1, -0.42)
+mesh = SubResource("SphereMesh_eye")
+
+[node name="EyeR" type="MeshInstance3D" parent="HeadPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0.1, -0.42)
+mesh = SubResource("SphereMesh_eye")
+
+[node name="ChulloBase" type="MeshInstance3D" parent="HeadPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+mesh = SubResource("CylinderMesh_hat_base")
+
+[node name="ChulloCone" type="MeshInstance3D" parent="HeadPivot"]
+transform = Transform3D(0.965926, -0.173648, 0.194939, 0, 0.746638, 0.66523, -0.258819, -0.648212, 0.721204, 0, 0.65, 0.1)
+mesh = SubResource("CylinderMesh_hat_cone")
+
+[node name="ChulloFlapL" type="MeshInstance3D" parent="HeadPivot"]
+transform = Transform3D(-1, -8.74228e-08, 0, 8.74228e-08, -1, 0, 0, 0, 1, -0.42, 0.15, 0)
+mesh = SubResource("PrismMesh_ear")
+surface_material_override/0 = SubResource("ShaderMaterial_chullo_red")
+
+[node name="ChulloFlapR" type="MeshInstance3D" parent="HeadPivot"]
+transform = Transform3D(-1, -8.74228e-08, 0, 8.74228e-08, -1, 0, 0, 0, 1, 0.42, 0.15, 0)
+mesh = SubResource("PrismMesh_ear")
+surface_material_override/0 = SubResource("ShaderMaterial_chullo_red")

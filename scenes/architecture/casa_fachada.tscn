@@ -1,0 +1,109 @@
+[gd_scene load_steps=15 format=3 uid="uid://casa_fachada_001"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+[ext_resource type="Texture2D" path="res://assets/textures/casa/casa_frente.png" id="2_front"]
+[ext_resource type="Texture2D" path="res://assets/textures/casa/casa_trasera.png" id="3_back"]
+[ext_resource type="Texture2D" path="res://assets/textures/casa/casa_lado_derecho.png" id="4_right"]
+[ext_resource type="Texture2D" path="res://assets/textures/casa/casa_lado_izquierdo.png" id="5_left"]
+[ext_resource type="Texture2D" path="res://assets/textures/casa/casa_tejas.png" id="6_roof"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_front"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(1, 1, 1, 1)
+shader_parameter/albedo_texture = ExtResource("2_front")
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_back"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(1, 1, 1, 1)
+shader_parameter/albedo_texture = ExtResource("3_back")
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_right"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(1, 1, 1, 1)
+shader_parameter/albedo_texture = ExtResource("4_right")
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_left"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(1, 1, 1, 1)
+shader_parameter/albedo_texture = ExtResource("5_left")
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_roof"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(1, 1, 1, 1)
+shader_parameter/albedo_texture = ExtResource("6_roof")
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_front"]
+material = SubResource("ShaderMaterial_front")
+size = Vector2(6.0, 4.6)
+
+[sub_resource type="QuadMesh" id="QuadMesh_back"]
+material = SubResource("ShaderMaterial_back")
+size = Vector2(6.0, 4.6)
+
+[sub_resource type="QuadMesh" id="QuadMesh_side"]
+material = SubResource("ShaderMaterial_right")
+size = Vector2(5.0, 4.6)
+
+[sub_resource type="QuadMesh" id="QuadMesh_side_left"]
+material = SubResource("ShaderMaterial_left")
+size = Vector2(5.0, 4.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_roof"]
+material = SubResource("ShaderMaterial_roof")
+size = Vector3(6.6, 0.2, 5.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall"]
+size = Vector3(6.0, 5.0, 5.0)
+
+[node name="CasaFachada" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionMain" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -2.5)
+shape = SubResource("BoxShape3D_wall")
+
+[node name="WallFront" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
+mesh = SubResource("QuadMesh_front")
+
+[node name="WallBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 2.3, -5.0)
+mesh = SubResource("QuadMesh_back")
+
+[node name="WallRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 3.0, 2.3, -2.5)
+mesh = SubResource("QuadMesh_side")
+
+[node name="WallLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -3.0, 2.3, -2.5)
+mesh = SubResource("QuadMesh_side_left")
+
+[node name="Roof" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.994522, 0.104528, 0, -0.104528, 0.994522, 0, 4.65, -2.5)
+mesh = SubResource("BoxMesh_roof")

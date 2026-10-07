@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://dp7b3m8q5k1x2"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_stair_stone"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.38, 0.39, 0.40, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_step"]
+material = SubResource("ShaderMaterial_stair_stone")
+size = Vector3(2.2, 0.32, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_step1"]
+size = Vector3(2.2, 0.32, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_step2"]
+size = Vector3(2.2, 0.64, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_step3"]
+size = Vector3(2.2, 0.96, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_step4"]
+size = Vector3(2.2, 1.28, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_step5"]
+size = Vector3(2.2, 1.60, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_step6"]
+size = Vector3(2.2, 1.92, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_step7"]
+size = Vector3(2.2, 2.24, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_step8"]
+size = Vector3(2.2, 2.40, 0.6)
+
+[node name="EscalinataPiedra" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 2
+
+[node name="Step1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 2.1)
+mesh = SubResource("BoxMesh_step")
+
+[node name="Coll1" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 2.1)
+shape = SubResource("BoxShape3D_step1")
+
+[node name="Step2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.48, 1.5)
+mesh = SubResource("BoxMesh_step")
+
+[node name="Coll2" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32, 1.5)
+shape = SubResource("BoxShape3D_step2")
+
+[node name="Step3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.80, 0.9)
+mesh = SubResource("BoxMesh_step")
+
+[node name="Coll3" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.48, 0.9)
+shape = SubResource("BoxShape3D_step3")
+
+[node name="Step4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.12, 0.3)
+mesh = SubResource("BoxMesh_step")
+
+[node name="Coll4" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.64, 0.3)
+shape = SubResource("BoxShape3D_step4")
+
+[node name="Step5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.44, -0.3)
+mesh = SubResource("BoxMesh_step")
+
+[node name="Coll5" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.80, -0.3)
+shape = SubResource("BoxShape3D_step5")
+
+[node name="Step6" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.76, -0.9)
+mesh = SubResource("BoxMesh_step")
+
+[node name="Coll6" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.96, -0.9)
+shape = SubResource("BoxShape3D_step6")
+
+[node name="Step7" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.08, -1.5)
+mesh = SubResource("BoxMesh_step")
+
+[node name="Coll7" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.12, -1.5)
+shape = SubResource("BoxShape3D_step7")
+
+[node name="Step8" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.40, -2.1)
+mesh = SubResource("BoxMesh_step")
+
+[node name="Coll8" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.20, -2.1)
+shape = SubResource("BoxShape3D_step8")

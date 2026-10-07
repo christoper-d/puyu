@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://b7v2nax4n1k5p"]
+
+[ext_resource type="Script" path="res://scripts/interactable_pickup.gd" id="1_script"]
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="2_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rope"]
+render_priority = 0
+shader = ExtResource("2_ps2shader")
+shader_parameter/albedo_color = Color(0.58, 0.50, 0.36, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="TorusMesh" id="TorusMesh_coil1"]
+material = SubResource("ShaderMaterial_rope")
+inner_radius = 0.18
+outer_radius = 0.28
+rings = 8
+ring_segments = 6
+
+[sub_resource type="TorusMesh" id="TorusMesh_coil2"]
+material = SubResource("ShaderMaterial_rope")
+inner_radius = 0.16
+outer_radius = 0.26
+rings = 8
+ring_segments = 6
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_interact"]
+radius = 1.6
+
+[node name="PickupSoga" type="Area3D"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_script")
+item_type = 0
+item_name = "Soga"
+prompt_message = "[E] Tomar Soga Andina"
+
+[node name="Coil1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.06, 0)
+mesh = SubResource("TorusMesh_coil1")
+
+[node name="Coil2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, 0.02, 0.12, 0)
+mesh = SubResource("TorusMesh_coil2")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_interact")

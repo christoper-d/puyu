@@ -1,0 +1,16 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+*.translation
+
+# Build artifacts & binaries
+builds/
+*.apk
+*.aab
+*.pck
+*.idsig
+
+# Temporary / Scratch files
+scratch/
+fix_*.py
+*.tmp

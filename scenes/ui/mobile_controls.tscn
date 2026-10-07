@@ -1,0 +1,190 @@
+[gd_scene format=3 uid="uid://c8m4p7k2oav1x"]
+
+[ext_resource type="Script" path="res://scripts/ui/mobile_controls.gd" id="1_controller"]
+[ext_resource type="Script" path="res://scripts/ui/virtual_joystick.gd" id="2_joystick"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_attack"]
+bg_color = Color(0.45, 0.12, 0.12, 0.75)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9, 0.35, 0.3, 0.9)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_action"]
+bg_color = Color(0.14, 0.13, 0.12, 0.75)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.85, 0.78, 0.65, 0.8)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_weapon_dock"]
+bg_color = Color(0.08, 0.08, 0.08, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.85, 0.75, 0.5, 0.6)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="MobileControls" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_controller")
+
+[node name="Joystick" type="Control" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -140.0
+offset_right = 140.0
+offset_bottom = -20.0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("2_joystick")
+
+[node name="Actions" type="Control" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -160.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="BtnAttack" type="Button" parent="Actions"]
+layout_mode = 0
+offset_left = 145.0
+offset_top = 80.0
+offset_right = 203.0
+offset_bottom = 138.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_attack")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_attack")
+text = "ATACAR"
+
+[node name="BtnAim" type="Button" parent="Actions"]
+layout_mode = 0
+offset_left = 90.0
+offset_top = 92.0
+offset_right = 136.0
+offset_bottom = 138.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_action")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_action")
+text = "APUNTAR"
+
+[node name="BtnJump" type="Button" parent="Actions"]
+layout_mode = 0
+offset_left = 152.0
+offset_top = 26.0
+offset_right = 196.0
+offset_bottom = 70.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_action")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_action")
+text = "SALTO"
+
+[node name="BtnInteract" type="Button" parent="Actions"]
+layout_mode = 0
+offset_left = 96.0
+offset_top = 38.0
+offset_right = 140.0
+offset_bottom = 82.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_action")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_action")
+text = "USAR"
+
+[node name="BtnReload" type="Button" parent="Actions"]
+visible = false
+layout_mode = 0
+offset_left = 34.0
+offset_top = 92.0
+offset_right = 82.0
+offset_bottom = 136.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 9
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_action")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_action")
+text = "CARGAR"
+
+[node name="WeaponDock" type="Control" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -340.0
+offset_top = 8.0
+offset_right = -10.0
+offset_bottom = 44.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="WeaponBar" type="HBoxContainer" parent="WeaponDock"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -14.0
+offset_right = -90.0
+offset_bottom = 14.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/separation = 4
+alignment = 2
+
+[node name="BtnCycleWeapon" type="Button" parent="WeaponDock"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -86.0
+offset_top = -14.0
+offset_bottom = 14.0
+grow_horizontal = 0
+grow_vertical = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBoxFlat_weapon_dock")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_weapon_dock")
+text = "↻ Arma"
+
+[node name="PCToggleButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 220.0
+offset_top = 10.0
+offset_right = 296.0
+offset_bottom = 28.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 9
+text = "Touch: OFF"

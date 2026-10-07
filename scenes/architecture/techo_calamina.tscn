@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://b1m6q9a4f2x7e"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_calamina"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.52, 0.32, 0.22, 1)
+shader_parameter/roughness_val = 0.9
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wood"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.28, 0.20, 0.14, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_sheet"]
+material = SubResource("ShaderMaterial_calamina")
+size = Vector3(6.0, 0.12, 2.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_beam_ridge"]
+material = SubResource("ShaderMaterial_wood")
+size = Vector3(6.1, 0.22, 0.22)
+
+[sub_resource type="BoxMesh" id="BoxMesh_beam_cross"]
+material = SubResource("ShaderMaterial_wood")
+size = Vector3(0.18, 0.18, 4.8)
+
+[node name="TechoCalamina" type="Node3D"]
+
+[node name="SheetFront" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.939693, -0.34202, 0, 0.34202, 0.939693, 0, 0.52, 1.35)
+mesh = SubResource("BoxMesh_sheet")
+
+[node name="SheetBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0.52, -1.35)
+mesh = SubResource("BoxMesh_sheet")
+
+[node name="RidgeBeam" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+mesh = SubResource("BoxMesh_beam_ridge")
+
+[node name="CrossBeamLeft" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2, 0.2, 0)
+mesh = SubResource("BoxMesh_beam_cross")
+
+[node name="CrossBeamRight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.2, 0)
+mesh = SubResource("BoxMesh_beam_cross")

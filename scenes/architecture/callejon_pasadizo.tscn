@@ -1,0 +1,144 @@
+[gd_scene format=3 uid="uid://callejon_pasadizo_01"]
+
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="1_ps2shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_adobe_wall"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.52, 0.44, 0.35, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pirca_base"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.38, 0.36, 0.32, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dirt_floor"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.30, 0.24, 0.17, 1)
+shader_parameter/roughness_val = 1.0
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_post_concrete"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.55, 0.52, 0.48, 1)
+shader_parameter/roughness_val = 0.95
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_post_arm"]
+render_priority = 0
+shader = ExtResource("1_ps2shader")
+shader_parameter/albedo_color = Color(0.35, 0.35, 0.38, 1)
+shader_parameter/roughness_val = 0.85
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_left"]
+material = SubResource("ShaderMaterial_adobe_wall")
+size = Vector3(0.55, 3.2, 16.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_left"]
+size = Vector3(0.55, 3.2, 16.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_right"]
+material = SubResource("ShaderMaterial_adobe_wall")
+size = Vector3(0.55, 3.2, 16.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_right"]
+size = Vector3(0.55, 3.2, 16.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_base_left"]
+material = SubResource("ShaderMaterial_pirca_base")
+size = Vector3(0.6, 0.55, 16.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_base_right"]
+material = SubResource("ShaderMaterial_pirca_base")
+size = Vector3(0.6, 0.55, 16.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+material = SubResource("ShaderMaterial_dirt_floor")
+size = Vector3(2.8, 0.25, 16.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(2.8, 0.25, 16.5)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_post"]
+material = SubResource("ShaderMaterial_post_concrete")
+top_radius = 0.07
+bottom_radius = 0.09
+height = 4.2
+radial_segments = 6
+
+[sub_resource type="BoxMesh" id="BoxMesh_post_arm"]
+material = SubResource("ShaderMaterial_post_arm")
+size = Vector3(0.06, 0.06, 0.65)
+
+[node name="CallejonPasadizo" type="Node3D"]
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.12, 0)
+
+[node name="FloorMesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+
+[node name="FloorCollision" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallLeft" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.52, 1.6, 0)
+
+[node name="WallLeftMesh" type="MeshInstance3D" parent="WallLeft"]
+mesh = SubResource("BoxMesh_wall_left")
+
+[node name="WallLeftCollision" type="CollisionShape3D" parent="WallLeft"]
+shape = SubResource("BoxShape3D_wall_left")
+
+[node name="WallLeftBase" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.52, 0.27, 0)
+mesh = SubResource("BoxMesh_base_left")
+
+[node name="WallRight" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.52, 1.6, 0)
+
+[node name="WallRightMesh" type="MeshInstance3D" parent="WallRight"]
+mesh = SubResource("BoxMesh_wall_right")
+
+[node name="WallRightCollision" type="CollisionShape3D" parent="WallRight"]
+shape = SubResource("BoxShape3D_wall_right")
+
+[node name="WallRightBase" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.52, 0.27, 0)
+mesh = SubResource("BoxMesh_base_right")
+
+[node name="PosteLuz" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0, 0, -2.0)
+
+[node name="PosteCylinder" type="MeshInstance3D" parent="PosteLuz"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+mesh = SubResource("CylinderMesh_post")
+
+[node name="Brazo" type="MeshInstance3D" parent="PosteLuz"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 4.15, 0)
+mesh = SubResource("BoxMesh_post_arm")
+
+[node name="LuzPoste" type="OmniLight3D" parent="PosteLuz"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.65, 4.1, 0)
+light_color = Color(1.0, 0.70, 0.24, 1)
+light_energy = 2.2
+omni_range = 9.5
+shadow_enabled = true
+light_volumetric_fog_energy = 1.2
