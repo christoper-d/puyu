@@ -62,6 +62,8 @@ var _camera_rotation: Vector2 = Vector2.ZERO
 # Inventory & Equipment
 var inventory: Array[int] = [] # stores ItemType ints
 var item_names: Dictionary = {} # ItemType -> String name
+var weapon_catalog: Dictionary = {} # ItemType -> WeaponData (Resource)
+var current_weapon_data: Resource = null
 
 var equipped_item: ItemType = ItemType.NONE
 var equipped_name: String = "Desarmado"
@@ -92,6 +94,10 @@ var is_mobile: bool = false
 func _ready() -> void:
 	add_to_group("player")
 	_setup_default_inputs()
+	_load_weapon_catalog()
+
+	if Events:
+		Events.prompt_flashed.connect(_flash_prompt)
 	
 	is_mobile = OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios") or OS.get_name() == "Android" or OS.get_name() == "iOS" or DisplayServer.is_touchscreen_available()
 	if is_mobile:
@@ -113,6 +119,12 @@ func _ready() -> void:
 	if combo_button:
 		combo_button.pressed.connect(_execute_push)
 	_update_hud()
+
+func _load_weapon_catalog() -> void:
+	weapon_catalog[ItemType.ROPE] = preload("res://resources/weapons/soga.tres")
+	weapon_catalog[ItemType.AXE] = preload("res://resources/weapons/hacha.tres")
+	weapon_catalog[ItemType.MACHETE] = preload("res://resources/weapons/machete.tres")
+	weapon_catalog[ItemType.SHOTGUN] = preload("res://resources/weapons/escopeta.tres")
 
 
 func _setup_default_inputs() -> void:
@@ -365,14 +377,22 @@ func equip_item(type: int, item_title: String) -> void:
 	if hud_prompt:
 		hud_prompt.visible = false
 		hud_prompt.text = ""
+	if Events:
+		Events.inventory_updated.emit()
 	if mobile_controls and mobile_controls.has_method("_refresh_weapon_bar"):
 		mobile_controls._refresh_weapon_bar()
 
 func _switch_weapon(type: int) -> void:
 	equipped_item = type as ItemType
-	equipped_name = item_names.get(type, "Arma")
+	current_weapon_data = weapon_catalog.get(equipped_item, null)
+	if current_weapon_data:
+		equipped_name = current_weapon_data.display_name
+	else:
+		equipped_name = item_names.get(type, "Desarmado")
 	_update_hud()
 	_update_aim_visuals()
+	if Events:
+		Events.weapon_switched.emit(equipped_item, equipped_name)
 	if mobile_controls and mobile_controls.has_method("_refresh_weapon_bar"):
 		mobile_controls._refresh_weapon_bar()
 
@@ -405,10 +425,8 @@ func _handle_primary_action() -> void:
 				_handle_interaction()
 			else:
 				_throw_rope()
-		ItemType.AXE:
-			_swing_melee(35.0, true)
-		ItemType.MACHETE:
-			_swing_melee(18.0, false)
+		ItemType.AXE, ItemType.MACHETE:
+			_swing_melee()
 		ItemType.SHOTGUN:
 			_fire_shotgun()
 
@@ -574,11 +592,31 @@ func _is_headshot_hit(collider: Node, hit_pos: Vector3, enemy: Node) -> bool:
 		return true
 	return false
 
-func _swing_melee(damage: float, is_blunt: bool) -> void:
+func _swing_melee(override_damage: float = -1.0, override_is_blunt: bool = false) -> void:
 	if is_swinging:
 		return
 	is_swinging = true
-	swing_timer = 0.45
+
+	var damage = 20.0
+	var is_blunt = false
+	var cooldown = 0.45
+	var hit_range = 3.8
+	var tet_mult = 1.6
+	var hs_mult = 2.5
+
+	if current_weapon_data:
+		damage = current_weapon_data.base_damage
+		is_blunt = current_weapon_data.is_blunt
+		cooldown = current_weapon_data.attack_cooldown
+		hit_range = current_weapon_data.attack_range
+		tet_mult = current_weapon_data.tethered_damage_bonus
+		hs_mult = current_weapon_data.headshot_multiplier
+
+	if override_damage > 0.0:
+		damage = override_damage
+		is_blunt = override_is_blunt
+
+	swing_timer = cooldown
 
 	# Visual tilt forward
 	if visual:
@@ -589,7 +627,7 @@ func _swing_melee(damage: float, is_blunt: bool) -> void:
 	var origin = global_position + Vector3(0, 1.25, 0)
 	var forward = -camera.global_transform.basis.z if is_aiming else -visual.global_transform.basis.z
 	var ray_dir = forward.normalized()
-	var ray_end = origin + (ray_dir * 3.8)
+	var ray_end = origin + (ray_dir * hit_range)
 
 	var query = PhysicsRayQueryParameters3D.create(origin, ray_end, 5) # Layer 1 (world) + Layer 4 (enemy)
 	query.collide_with_areas = true
@@ -606,14 +644,14 @@ func _swing_melee(damage: float, is_blunt: bool) -> void:
 			hit_enemy = enemy
 			is_headshot = _is_headshot_hit(hit, result.position, enemy)
 
-	# Proximity assist: check enemies in front within 3.2m
+	# Proximity assist: check enemies in front within hit_range * 0.85
 	if not hit_enemy:
 		var enemies = get_tree().get_nodes_in_group("enemy")
 		for e in enemies:
 			if is_instance_valid(e) and e.has_method("take_damage") and e.get("current_state") != 6: # not DEFEATED
 				var to_e = e.global_position - global_position
 				to_e.y = 0.0
-				if to_e.length() <= 3.2:
+				if to_e.length() <= hit_range:
 					var angle = rad_to_deg(forward.angle_to(to_e.normalized()))
 					if angle <= 75.0:
 						hit_enemy = e
@@ -623,10 +661,14 @@ func _swing_melee(damage: float, is_blunt: bool) -> void:
 
 	if hit_enemy:
 		var is_tet = hit_enemy.get("is_tethered") == true
-		var base_dmg = damage * (1.6 if is_tet else 1.0)
+		var base_dmg = damage * (tet_mult if is_tet else 1.0)
 		hit_enemy.take_damage(base_dmg, is_blunt, is_headshot)
+		if Events:
+			Events.enemy_damaged.emit(hit_enemy, base_dmg, is_headshot)
 		if is_headshot:
-			_flash_prompt("¡¡HACHAZO EN LA CABEZA!! ¡Daño crítico! (%.0f)" % (base_dmg * 2.5), 2.0)
+			if Events:
+				Events.headshot_landed.emit(hit_enemy, base_dmg * hs_mult)
+			_flash_prompt("¡¡IMPACTO CRÍTICO EN LA CABEZA!! (%.0f)" % (base_dmg * hs_mult), 2.0)
 		else:
 			_flash_prompt("¡IMPACTO! (%.0f daño)" % base_dmg, 1.2)
 	else:
@@ -661,6 +703,14 @@ func _fire_shotgun() -> void:
 	shotgun_loaded = false
 	_update_hud()
 
+	var shot_dmg = 65.0
+	var shot_hs_mult = 2.5
+	var shot_range = 25.0
+	if current_weapon_data:
+		shot_dmg = current_weapon_data.base_damage
+		shot_hs_mult = current_weapon_data.headshot_multiplier
+		shot_range = current_weapon_data.attack_range
+
 	# Screen recoil kick
 	_camera_rotation.y = clamp(_camera_rotation.y + deg_to_rad(12.0), deg_to_rad(camera_tilt_min), deg_to_rad(camera_tilt_max))
 	_update_camera_rotation()
@@ -693,7 +743,7 @@ func _fire_shotgun() -> void:
 	
 	for offset in offsets:
 		var dir = (cam_forward + offset).normalized()
-		var ray_end = cam_pos + (dir * 25.0) # 25m range
+		var ray_end = cam_pos + (dir * shot_range)
 		var query = PhysicsRayQueryParameters3D.create(cam_pos, ray_end, 5) # 1 (world) | 4 (enemy)
 		query.collide_with_areas = true # Detects HeadArea
 		query.exclude = [self]
@@ -709,11 +759,15 @@ func _fire_shotgun() -> void:
 					break # Priority: if any pellet landed in the head, headshot locks!
 				
 	if hit_enemy:
-		hit_enemy.take_damage(65.0, true, is_headshot) # Stuns Jarjacha!
+		hit_enemy.take_damage(shot_dmg, true, is_headshot) # Stuns Jarjacha!
+		if Events:
+			Events.enemy_damaged.emit(hit_enemy, shot_dmg, is_headshot)
 		if is_headshot:
-			_flash_prompt("¡¡DISPARO EN LA CABEZA!! ¡Daño crítico masivo! (%.0f)" % (65.0 * 2.5), 2.5)
+			if Events:
+				Events.headshot_landed.emit(hit_enemy, shot_dmg * shot_hs_mult)
+			_flash_prompt("¡¡DISPARO EN LA CABEZA!! ¡Daño crítico masivo! (%.0f)" % (shot_dmg * shot_hs_mult), 2.5)
 		else:
-			_flash_prompt("¡PERDIGONADA DIRECTA! Impacto al cuerpo (65 daño)", 2.0)
+			_flash_prompt("¡PERDIGONADA DIRECTA! Impacto al cuerpo (%.0f daño)" % shot_dmg, 2.0)
 	else:
 		_flash_prompt("Disparo fallido...", 1.2)
 
@@ -722,6 +776,8 @@ func _fire_shotgun() -> void:
 
 func take_damage(amount: float) -> void:
 	current_health = max(0.0, current_health - amount)
+	if Events:
+		Events.player_health_changed.emit(current_health, max_health)
 	_flash_prompt("¡GOLPE RECIBIDO! Salud: %.0f" % current_health, 1.5)
 	_update_hud()
 	if current_health <= 0.0:
@@ -891,8 +947,13 @@ func _execute_push() -> void:
 	# Knock enemy back and stun
 	if push_target_enemy.has_method("receive_push"):
 		var push_force = 16.0 if equipped_item == ItemType.AXE else 12.0
+		if current_weapon_data:
+			push_force = current_weapon_data.push_force
 		push_target_enemy.receive_push(global_position, push_force, 2.5)
+		if Events:
+			Events.combo_push_executed.emit(push_target_enemy, push_force)
 		_flash_prompt("¡¡EMPUJÓN CERTERO!! Jarjacha aturdida", 2.2)
 
 	# Player push recoil
 	velocity -= (push_target_enemy.global_position - global_position).normalized() * 3.5
+
