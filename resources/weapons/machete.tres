@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/weapon_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "machete"
+display_name = "Machete"
+item_type = 2
+base_damage = 18.0
+headshot_multiplier = 2.5
+attack_range = 3.2
+is_blunt = false
+tethered_damage_bonus = 1.6
+attack_cooldown = 0.35
+push_force = 12.0
+ammo_capacity = 0

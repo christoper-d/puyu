@@ -394,8 +394,8 @@ func _process_tethered(delta: float) -> void:
 	# Pre-break warning when rope is about to snap
 	if stress_ratio >= 0.75 and not struggle_warning_given:
 		struggle_warning_given = true
-		if is_instance_valid(player_ref) and player_ref.has_method("_flash_prompt"):
-			player_ref._flash_prompt("¡¡CRAC!! ¡La soga está a punto de romperse!", 2.2)
+		Events.prompt_flashed.emit("¡¡CRAC!! ¡La soga está a punto de romperse!", 2.2)
+
 
 	# When struggle timer reaches break duration, snap a tether!
 	if struggle_timer >= break_duration:
@@ -463,12 +463,11 @@ func _snap_tether() -> void:
 		is_tethered = false
 		current_state = State.CHASE
 		enrage_boost_timer = 4.0
-		if is_instance_valid(player_ref) and player_ref.has_method("_flash_prompt"):
-			player_ref._flash_prompt("¡¡LA JARJACHA ROMPIÓ LA SOGA Y SE LIBERÓ ENFURECIDA!!", 3.5)
+		Events.prompt_flashed.emit("¡¡LA JARJACHA ROMPIÓ LA SOGA Y SE LIBERÓ ENFURECIDA!!", 3.5)
 	else:
-		if is_instance_valid(player_ref) and player_ref.has_method("_flash_prompt"):
-			var post_str = "queda 1 poste amarrado" if remaining == 1 else "quedan %d postes amarrados" % remaining
-			player_ref._flash_prompt("¡¡SE ROMPIÓ UN AMARRE!! Aún %s" % post_str, 2.5)
+		var post_str = "queda 1 poste amarrado" if remaining == 1 else "quedan %d postes amarrados" % remaining
+		Events.prompt_flashed.emit("¡¡SE ROMPIÓ UN AMARRE!! Aún %s" % post_str, 2.5)
+
 
 func _process_stunned(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, 15.0 * delta)
@@ -558,10 +557,9 @@ func _die() -> void:
 		if health_bar and health_bar.has_method("update_health"):
 			health_bar.update_health(current_health, max_health)
 
-		if is_instance_valid(player_ref) and player_ref.has_method("_flash_prompt"):
-			var p_text = "¡FASE " + str(current_level) + "! La Jarjacha enfurece"
-			if current_level == max_levels: p_text = "¡FASE FINAL! ¡Atácala con todo!"
-			player_ref._flash_prompt(p_text, 3.5)
+		var p_text = "¡FASE " + str(current_level) + "! La Jarjacha enfurece"
+		if current_level == max_levels: p_text = "¡FASE FINAL! ¡Atácala con todo!"
+		Events.prompt_flashed.emit(p_text, 3.5)
 			
 		var timer = get_tree().create_timer(3.0)
 		timer.timeout.connect(func():
@@ -586,8 +584,8 @@ func _die() -> void:
 		visual.rotation.x = deg_to_rad(75.0)
 		visual.position.y = -0.5
 
-	if is_instance_valid(player_ref) and player_ref.has_method("_flash_prompt"):
-		player_ref._flash_prompt("¡¡LA JARJACHA HA SIDO DERROTADA!!", 6.0)
+	Events.prompt_flashed.emit("¡¡LA JARJACHA HA SIDO DERROTADA!!", 6.0)
+
 
 func _flash_red_eyes() -> void:
 	if eye_left and eye_right:

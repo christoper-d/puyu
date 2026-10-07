@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/weapon_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = "shotgun"
+display_name = "Escopeta"
+item_type = 3
+base_damage = 65.0
+headshot_multiplier = 2.5
+attack_range = 25.0
+is_blunt = true
+tethered_damage_bonus = 1.0
+attack_cooldown = 0.8
+push_force = 12.0
+ammo_capacity = 1

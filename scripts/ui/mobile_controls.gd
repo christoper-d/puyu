@@ -70,6 +70,18 @@ func _connect_signals() -> void:
 	if pc_toggle_btn:
 		pc_toggle_btn.pressed.connect(_on_pc_toggle_pressed)
 
+	if Events:
+		if not Events.weapon_switched.is_connected(_on_event_weapon_switched):
+			Events.weapon_switched.connect(_on_event_weapon_switched)
+		if not Events.inventory_updated.is_connected(_on_event_inventory_updated):
+			Events.inventory_updated.connect(_on_event_inventory_updated)
+
+func _on_event_weapon_switched(_type: int, _name: String) -> void:
+	_refresh_weapon_bar()
+
+func _on_event_inventory_updated() -> void:
+	_refresh_weapon_bar()
+
 func _process(_delta: float) -> void:
 	if not visible:
 		return
