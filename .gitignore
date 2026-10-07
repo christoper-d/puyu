@@ -2,6 +2,7 @@
 .godot/
 /android/
 *.translation
+*.uid
 
 # Build artifacts & binaries
 builds/
