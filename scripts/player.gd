@@ -90,6 +90,8 @@ var push_target_enemy: Node3D = null
 var flash_prompt_timer: float = 0.0
 var mobile_move_vector: Vector2 = Vector2.ZERO
 var is_mobile: bool = false
+var is_god_mode: bool = false
+var is_speed_boost: bool = false
 
 func _ready() -> void:
 	add_to_group("player")
@@ -98,18 +100,50 @@ func _ready() -> void:
 
 	if Events:
 		Events.prompt_flashed.connect(_flash_prompt)
+		Events.control_mode_changed.connect(_on_control_mode_changed)
+		Events.debug_god_mode_toggled.connect(_on_debug_god_mode_toggled)
+		Events.debug_speed_boost_toggled.connect(_on_debug_speed_boost_toggled)
+		Events.debug_give_all_weapons.connect(_on_debug_give_all_weapons)
 	
-	is_mobile = OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios") or OS.get_name() == "Android" or OS.get_name() == "iOS" or DisplayServer.is_touchscreen_available()
-	if is_mobile:
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	else:
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
 	if mobile_controls:
 		if mobile_controls.has_method("set_player"):
 			mobile_controls.set_player(self)
 		else:
 			mobile_controls.player = self
+
+	# Control mode default: real mobile OS = touch, PC = keyboard/mouse captured
+	var is_real_mobile = OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios") or OS.get_name() == "Android" or OS.get_name() == "iOS"
+	set_control_mode(is_real_mobile)
+
+	if camera_pivot:
+		_camera_rotation.x = camera_pivot.rotation.y
+		_camera_rotation.y = camera_pivot.rotation.x
+	if spring_arm:
+		spring_arm.add_excluded_object(get_rid())
+	if combo_button:
+		combo_button.pressed.connect(_execute_push)
+	_update_hud()
+
+func set_control_mode(mobile_mode: bool) -> void:
+	is_mobile = mobile_mode
+	if is_mobile:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		if mobile_controls:
+			mobile_controls.visible = true
+			if mobile_controls.has_method("set_active"):
+				mobile_controls.set_active(true)
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		mobile_move_vector = Vector2.ZERO
+		if mobile_controls:
+			mobile_controls.visible = false
+			if mobile_controls.has_method("set_active"):
+				mobile_controls.set_active(false)
+			if mobile_controls.has_method("reset_all"):
+				mobile_controls.reset_all()
+
+func _on_control_mode_changed(mobile_mode: bool) -> void:
+	set_control_mode(mobile_mode)
 
 	if camera_pivot:
 		_camera_rotation.x = camera_pivot.rotation.y
@@ -303,6 +337,8 @@ func _handle_movement(delta: float) -> void:
 		is_sprinting = true
 
 	var target_speed: float = sprint_speed if is_sprinting else walk_speed
+	if is_speed_boost:
+		target_speed *= 2.2
 	if is_aiming:
 		target_speed *= 0.55
 	elif holding_rope_tension:
@@ -775,6 +811,9 @@ func _fire_shotgun() -> void:
 	velocity -= cam_forward * 6.0
 
 func take_damage(amount: float) -> void:
+	if is_god_mode:
+		_flash_prompt("🛡️ ¡MODO DIOS! Daño bloqueado", 1.0)
+		return
 	current_health = max(0.0, current_health - amount)
 	if Events:
 		Events.player_health_changed.emit(current_health, max_health)
@@ -782,6 +821,29 @@ func take_damage(amount: float) -> void:
 	_update_hud()
 	if current_health <= 0.0:
 		_flash_prompt("HAS CAÍDO EN LA NIEBLA...", 5.0)
+
+func _on_debug_god_mode_toggled(enabled: bool) -> void:
+	is_god_mode = enabled
+	if is_god_mode:
+		current_health = max_health
+		_update_hud()
+		_flash_prompt("🛠️ Modo Dios: ACTIVADO", 1.5)
+	else:
+		_flash_prompt("🛠️ Modo Dios: DESACTIVADO", 1.5)
+
+func _on_debug_speed_boost_toggled(enabled: bool) -> void:
+	is_speed_boost = enabled
+	_flash_prompt("🛠️ Super Velocidad: %s" % ("ACTIVADA" if enabled else "DESACTIVADA"), 1.5)
+
+func _on_debug_give_all_weapons() -> void:
+	equip_item(ItemType.ROPE, "Soga")
+	equip_item(ItemType.AXE, "Hacha")
+	equip_item(ItemType.MACHETE, "Machete")
+	equip_item(ItemType.SHOTGUN, "Escopeta")
+	shotgun_loaded = true
+	_switch_weapon(ItemType.AXE)
+	_flash_prompt("🛠️ ¡Todas las armas agregadas al inventario!", 2.5)
+
 
 # --- UI / HUD ---
 func _update_hud() -> void:

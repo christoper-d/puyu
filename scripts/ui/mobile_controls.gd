@@ -23,15 +23,29 @@ var camera_touch_id: int = -1
 func _ready() -> void:
 	_find_player()
 
-	is_mobile = OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios") or OS.get_name() == "Android" or OS.get_name() == "iOS" or DisplayServer.is_touchscreen_available()
+	is_mobile = OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios") or OS.get_name() == "Android" or OS.get_name() == "iOS"
+	set_active(is_mobile)
 
-	visible = is_mobile
 	if pc_toggle_btn:
-		pc_toggle_btn.visible = not is_mobile
-		pc_toggle_btn.text = "Touch: OFF"
+		pc_toggle_btn.visible = false
 
 	_connect_signals()
 	_refresh_weapon_bar()
+
+func set_active(active: bool) -> void:
+	visible = active
+	set_process(active)
+	set_process_input(active)
+	if not active:
+		reset_all()
+
+func reset_all() -> void:
+	if joystick:
+		joystick.reset_joystick()
+	joystick_touch_id = -1
+	camera_touch_id = -1
+	if is_instance_valid(player):
+		player.mobile_move_vector = Vector2.ZERO
 
 func set_player(p: CharacterBody3D) -> void:
 	player = p
@@ -67,14 +81,18 @@ func _connect_signals() -> void:
 		btn_reload.pressed.connect(_on_reload_pressed)
 	if btn_cycle_weapon:
 		btn_cycle_weapon.pressed.connect(_on_cycle_weapon_pressed)
-	if pc_toggle_btn:
-		pc_toggle_btn.pressed.connect(_on_pc_toggle_pressed)
 
 	if Events:
 		if not Events.weapon_switched.is_connected(_on_event_weapon_switched):
 			Events.weapon_switched.connect(_on_event_weapon_switched)
 		if not Events.inventory_updated.is_connected(_on_event_inventory_updated):
 			Events.inventory_updated.connect(_on_event_inventory_updated)
+		if not Events.control_mode_changed.is_connected(_on_control_mode_changed):
+			Events.control_mode_changed.connect(_on_control_mode_changed)
+
+func _on_control_mode_changed(mobile_mode: bool) -> void:
+	is_mobile = mobile_mode
+	set_active(mobile_mode)
 
 func _on_event_weapon_switched(_type: int, _name: String) -> void:
 	_refresh_weapon_bar()
