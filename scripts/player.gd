@@ -242,10 +242,23 @@ func _unhandled_input(event: InputEvent) -> void:
 				_execute_push()
 		elif event.keycode == KEY_R and equipped_item == ItemType.SHOTGUN:
 			_reload_shotgun()
+		elif event.keycode == KEY_T or event.keycode == KEY_L:
+			_toggle_lantern()
 		elif event.keycode >= KEY_1 and event.keycode <= KEY_4:
 			var idx = event.keycode - KEY_1
 			if idx < inventory.size():
 				_switch_weapon(inventory[idx])
+
+func _toggle_lantern() -> void:
+	var lantern = find_child("Lantern", true, false)
+	if lantern:
+		if lantern.has_method("toggle"):
+			var is_on = lantern.toggle()
+			_flash_prompt("Linterna: %s" % ("ENCENDIDA" if is_on else "APAGADA"), 1.2)
+		else:
+			lantern.visible = not lantern.visible
+			_flash_prompt("Linterna: %s" % ("ENCENDIDA" if lantern.visible else "APAGADA"), 1.2)
+
 
 func _physics_process(delta: float) -> void:
 	_update_timers(delta)

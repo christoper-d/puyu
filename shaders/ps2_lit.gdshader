@@ -3,7 +3,7 @@ render_mode diffuse_lambert, specular_disabled, cull_disabled;
 
 // Visuals
 uniform vec4 albedo_color : source_color = vec4(0.8, 0.8, 0.8, 1.0);
-uniform sampler2D albedo_texture : source_color, filter_nearest;
+uniform sampler2D albedo_texture : source_color, filter_nearest, hint_default_white;
 uniform float roughness_val : hint_range(0.0, 1.0) = 0.95;
 
 // PS2 Geometry Jitter
