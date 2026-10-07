@@ -151,4 +151,11 @@ puyu/
 
 ---
 
+## 🤝 Contribución y Flujo de Ramas
+
+Para colaborar en el desarrollo de **PUYU**, revisa nuestra [Guía de Contribución](CONTRIBUTING.md) con la convención de ramas (`feature/V101-...`, `hotfix/V101-...`), estándares de commits y proceso de Pull Requests.
+
+---
+
 *Desarrollado por **dj** (@christoper-d)*
+
