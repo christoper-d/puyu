@@ -142,17 +142,19 @@ fov = 52.0
 near = 0.05
 
 [node name="Lantern" type="Node3D" parent="CameraPivot"]
-transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0.22, 0, -0.1)
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0.36, -0.32, -0.52)
 script = ExtResource("4_lantern")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="CameraPivot/Lantern"]
-light_color = Color(1, 0.82, 0.52, 1)
-light_energy = 1.8
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.14)
+light_color = Color(1, 0.84, 0.5, 1)
+light_energy = 3.6
 shadow_enabled = true
-spot_range = 25.0
-spot_angle = 38.0
-spot_attenuation = 1.4
-light_volumetric_fog_energy = 0.6
+shadow_bias = 0.08
+spot_range = 28.0
+spot_angle = 45.0
+spot_attenuation = 0.85
+light_volumetric_fog_energy = 0.9
 
 [node name="HUD" type="CanvasLayer" parent="."]
 layer = 2
