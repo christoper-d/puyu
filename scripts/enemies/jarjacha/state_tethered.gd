@@ -23,8 +23,10 @@ func physics_update(delta: float) -> void:
 	var break_duration = 7.5
 	if tether_count == 2:
 		break_duration = 20.0
-	elif tether_count >= 3:
+	elif tether_count == 3:
 		break_duration = 42.0
+	elif tether_count >= 4:
+		break_duration = 90.0 # Túpac Amaru: 4 puntos de amarre inmovilizan a la bestia de forma prolongada
 
 	host.struggle_timer += delta
 	var stress_ratio = clamp(host.struggle_timer / break_duration, 0.0, 1.0)

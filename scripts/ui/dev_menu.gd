@@ -335,6 +335,40 @@ func _build_ui() -> void:
 	enemy_info_label.add_theme_font_size_override("font_size", 9)
 	tab_diag.add_child(enemy_info_label)
 
+	# --- TAB 5: LOGROS ---
+	var tab_ach = VBoxContainer.new()
+	tab_ach.name = "🏆 Logros"
+	tab_ach.add_theme_constant_override("separation", 6)
+	tabs.add_child(tab_ach)
+
+	var ach_header = Label.new()
+	ach_header.text = "Sistema de Logros (Persistente):"
+	ach_header.add_theme_font_size_override("font_size", 9)
+	ach_header.add_theme_color_override("font_color", Color(0.95, 0.8, 0.3, 1.0))
+	tab_ach.add_child(ach_header)
+
+	var btn_test_tupac = Button.new()
+	btn_test_tupac.text = "🏆 Test: Desbloquear Túpac Amaru"
+	btn_test_tupac.add_theme_font_size_override("font_size", 10)
+	btn_test_tupac.pressed.connect(func():
+		var ach_mgr = get_node_or_null("/root/Achievements")
+		if ach_mgr and ach_mgr.has_method("unlock"):
+			ach_mgr.unlock("tupac_amaru")
+	)
+	tab_ach.add_child(btn_test_tupac)
+
+	var btn_reset_ach = Button.new()
+	btn_reset_ach.text = "🔄 Resetear Todos los Logros"
+	btn_reset_ach.add_theme_font_size_override("font_size", 10)
+	btn_reset_ach.pressed.connect(func():
+		var ach_mgr = get_node_or_null("/root/Achievements")
+		if ach_mgr and ach_mgr.has_method("reset_all_achievements"):
+			ach_mgr.reset_all_achievements()
+			if Events:
+				Events.prompt_flashed.emit("Logros reseteados en disco", 2.0)
+	)
+	tab_ach.add_child(btn_reset_ach)
+
 func _set_control_scheme(mobile: bool) -> void:
 	is_mobile_mode = mobile
 	if control_status_label:
