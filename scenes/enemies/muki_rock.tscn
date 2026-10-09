@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://c7muki00rock1"]
+
+[ext_resource type="Script" path="res://scripts/enemies/muki/muki_rock.gd" id="1_script"]
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ore"]
+render_priority = 0
+shader = ExtResource("2_shader")
+shader_parameter/albedo_color = Color(0.72, 0.60, 0.22, 1)
+shader_parameter/roughness_val = 0.6
+shader_parameter/jitter_enabled = true
+shader_parameter/jitter_resolution = 280.0
+shader_parameter/jitter_strength = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_ore"]
+material = SubResource("ShaderMaterial_ore")
+size = Vector3(0.18, 0.16, 0.18)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hit"]
+radius = 0.28
+
+[node name="MukiRock" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_ore")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+light_color = Color(0.95, 0.8, 0.3, 1)
+light_energy = 0.6
+omni_range = 1.2
+
+[node name="Area3D" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("SphereShape3D_hit")
