@@ -37,6 +37,12 @@ signal enemy_tether_strained(enemy: Node, stress_ratio: float)
 @warning_ignore("unused_signal")
 signal enemy_tether_snapped(enemy: Node, remaining_count: int)
 
+# --- Señales de Logros (Achievements) ---
+@warning_ignore("unused_signal")
+signal achievement_unlocked(id: String, title: String, description: String)
+@warning_ignore("unused_signal")
+signal enemy_tethered_to_post(enemy: Node, total_posts: int)
+
 # --- Señales de Configuración y Modo de Desarrollo (DevMenu & Plataforma) ---
 @warning_ignore("unused_signal")
 signal control_mode_changed(is_mobile: bool)

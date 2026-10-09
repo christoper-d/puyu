@@ -612,7 +612,13 @@ func _tie_rope_to_anchor(anchor_node: Node3D) -> void:
 	if "active_tethers" in tethered_enemy:
 		t_count = tethered_enemy.active_tethers.size()
 
-	if t_count >= 3:
+	# Notificar al EventBus para el AchievementManager y otros sistemas
+	if Events:
+		Events.enemy_tethered_to_post.emit(tethered_enemy, t_count)
+
+	if t_count >= 4:
+		_flash_prompt("¡¡AMARRADA A 4 POSTES!! ¡¡LOGRO TÚPAC AMARU DESBLOQUEADO!!", 4.5)
+	elif t_count == 3:
 		_flash_prompt("¡¡AMARRADA A 3 POSTES!! ¡Totalmente inmovilizada!", 4.0)
 	elif t_count == 2:
 		_flash_prompt("¡AMARRADA A 2 POSTES! Movimiento muy reducido", 3.5)
