@@ -12,6 +12,7 @@ enum ItemType {
 @export_group("Movement")
 @export var walk_speed: float = 6.0
 @export var sprint_speed: float = 10.0
+@export var crouch_speed: float = 2.4
 @export var acceleration: float = 40.0
 @export var air_acceleration: float = 18.0
 @export var friction: float = 35.0
@@ -75,6 +76,9 @@ var is_aiming: bool = false
 var active_rope_visual: Node3D = null
 var tethered_enemy: CharacterBody3D = null
 var holding_rope_tension: bool = false
+var is_crouching: bool = false
+var rope_overpower_progress: float = 0.0
+var is_dragging_enemy: bool = false
 
 # Shotgun ammo
 var shotgun_loaded: bool = true
@@ -168,6 +172,7 @@ func _setup_default_inputs() -> void:
 	_ensure_key_action("move_right", KEY_D, KEY_RIGHT)
 	_ensure_key_action("jump", KEY_SPACE)
 	_ensure_key_action("sprint", KEY_SHIFT)
+	_ensure_key_action("crouch", KEY_CTRL, KEY_C)
 	_ensure_key_action("interact", KEY_E)
 
 func _ensure_key_action(action: StringName, primary: Key, secondary: Key = KEY_NONE) -> void:
@@ -345,16 +350,35 @@ func _handle_movement(delta: float) -> void:
 		input_dir = mobile_move_vector
 	
 	
-	var is_sprinting: bool = Input.is_action_pressed("sprint") and not is_aiming and not holding_rope_tension
-	if mobile_move_vector.length() > 0.88 and not is_aiming and not holding_rope_tension:
-		is_sprinting = true
+	if not is_mobile:
+		is_crouching = Input.is_action_pressed("crouch")
 
-	var target_speed: float = sprint_speed if is_sprinting else walk_speed
+	# Suavizado de altura de cámara al agacharse
+	if camera_pivot:
+		var target_cam_y = 0.95 if is_crouching else 1.45
+		camera_pivot.position.y = move_toward(camera_pivot.position.y, target_cam_y, 4.0 * delta)
+
+	var is_sprinting: bool = (Input.is_action_pressed("sprint") or mobile_move_vector.length() > 0.88) and not is_aiming
+	if holding_rope_tension and not is_crouching:
+		is_sprinting = false
+
+	var target_speed: float = walk_speed
+	if is_crouching:
+		if holding_rope_tension and is_sprinting:
+			# Postura afianzada de arrastre: velocidad según tracción alcanzada
+			target_speed = 3.0 if rope_overpower_progress >= 0.45 else 1.4
+		else:
+			target_speed = crouch_speed
+	elif is_sprinting:
+		target_speed = sprint_speed
+	else:
+		target_speed = walk_speed
+
 	if is_speed_boost:
 		target_speed *= 2.2
 	if is_aiming:
 		target_speed *= 0.55
-	elif holding_rope_tension:
+	elif holding_rope_tension and not (is_crouching and is_sprinting):
 		target_speed *= 0.70
 
 	# Wall hug limits movement
@@ -536,9 +560,11 @@ func _calculate_and_apply_lasso(enemy: CharacterBody3D) -> void:
 func _latch_rope_to_enemy(enemy: CharacterBody3D) -> void:
 	tethered_enemy = enemy
 	holding_rope_tension = true
+	rope_overpower_progress = 0.0
+	is_dragging_enemy = false
 	if enemy.has_method("apply_player_lasso"):
 		enemy.apply_player_lasso()
-	_flash_prompt("¡ENGRILLETADA! Corre a un poste para amarrarla [E]", 3.5)
+	_flash_prompt("¡ENGRILLETADA! [Ctrl+Shift] para afianzarte y arrastrarla | [E] en un poste", 4.0)
 
 	# Spawn visual rope
 	var rope_scene = load("res://scenes/props/rope_visual.tscn")
@@ -552,10 +578,6 @@ func _latch_rope_to_enemy(enemy: CharacterBody3D) -> void:
 		if enemy.has_node("Visual/Neck/TetherPoint"):
 			target_point = enemy.get_node("Visual/Neck/TetherPoint")
 		active_rope_visual.setup_targets(from_node, target_point)
-
-	# Apply tether physics to Jarjacha
-	if enemy.has_method("apply_rope_tether"):
-		enemy.apply_rope_tether(global_position, 8.0, self)
 
 func _tie_rope_to_anchor(anchor_node: Node3D) -> void:
 	if not is_instance_valid(tethered_enemy):
@@ -575,12 +597,16 @@ func _tie_rope_to_anchor(anchor_node: Node3D) -> void:
 	elif tethered_enemy.has_method("apply_rope_tether"):
 		tethered_enemy.apply_rope_tether(anchor_pos, 5.0, anchor_node)
 
+	if tethered_enemy.has_method("release_player_drag"):
+		tethered_enemy.release_player_drag()
 	if tethered_enemy.has_method("release_player_lasso"):
 		tethered_enemy.release_player_lasso()
 
 	# Handover ownership of active_rope_visual to Jarjacha
 	active_rope_visual = null
 	holding_rope_tension = false
+	is_dragging_enemy = false
+	rope_overpower_progress = 0.0
 
 	var t_count = 1
 	if "active_tethers" in tethered_enemy:
@@ -598,6 +624,8 @@ func _tie_rope_to_anchor(anchor_node: Node3D) -> void:
 
 func _release_rope() -> void:
 	if is_instance_valid(tethered_enemy):
+		if tethered_enemy.has_method("release_player_drag"):
+			tethered_enemy.release_player_drag()
 		if tethered_enemy.has_method("release_player_lasso"):
 			tethered_enemy.release_player_lasso()
 		if "active_tethers" in tethered_enemy and tethered_enemy.active_tethers.is_empty():
@@ -607,17 +635,68 @@ func _release_rope() -> void:
 		active_rope_visual = null
 	tethered_enemy = null
 	holding_rope_tension = false
+	is_dragging_enemy = false
+	rope_overpower_progress = 0.0
 	_update_hud()
 
 func _update_rope_tension(delta: float) -> void:
-	if holding_rope_tension and is_instance_valid(tethered_enemy):
-		var dist = global_position.distance_to(tethered_enemy.global_position)
+	if not holding_rope_tension or not is_instance_valid(tethered_enemy):
+		rope_overpower_progress = 0.0
+		is_dragging_enemy = false
+		return
+
+	var dist = global_position.distance_to(tethered_enemy.global_position)
+	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	if mobile_move_vector.length_squared() > 0.01:
+		input_dir = mobile_move_vector
+
+	var is_sprint_pressed = Input.is_action_pressed("sprint") or mobile_move_vector.length() > 0.88
+	var is_pulling_stance = is_crouching and is_sprint_pressed
+
+	if is_pulling_stance and input_dir.length_squared() > 0.01:
+		# Acumulación progresiva de tracción y fuerza en las piernas
+		rope_overpower_progress = min(1.0, rope_overpower_progress + delta * 0.75)
+	else:
+		rope_overpower_progress = max(0.0, rope_overpower_progress - delta * 1.5)
+
+	# Actualizar estrés visual en la soga
+	if is_instance_valid(active_rope_visual):
+		if "stress_level" in active_rope_visual:
+			var target_stress = clamp(dist / 9.0, 0.2, 0.95)
+			if rope_overpower_progress > 0.5:
+				target_stress = 0.85
+			active_rope_visual.stress_level = lerp(active_rope_visual.stress_level, target_stress, 8.0 * delta)
+
+	# Superar la fuerza de la bestia si se alcanza el umbral de tracción
+	if rope_overpower_progress >= 0.45:
+		is_dragging_enemy = true
+		if tethered_enemy.has_method("apply_player_drag"):
+			tethered_enemy.apply_player_drag(global_position, rope_overpower_progress)
+
+		if rope_overpower_progress >= 0.85:
+			_flash_prompt("¡¡ARRASTRANDO A LA JARJACHA!! Llévala hacia un poste [E]", 0.4)
+		else:
+			_flash_prompt("¡¡GANANDO TRACCIÓN!! Arrastrando a la bestia...", 0.4)
+
+		# El jugador mantiene la firmeza y atrae a la bestia
+		if dist > 7.5:
+			var pull_enemy_dir = (global_position - tethered_enemy.global_position).normalized()
+			tethered_enemy.global_position += pull_enemy_dir * ((dist - 7.5) * 3.5 * delta)
+	else:
+		if is_dragging_enemy:
+			is_dragging_enemy = false
+			if tethered_enemy.has_method("release_player_drag"):
+				tethered_enemy.release_player_drag()
+
+		if is_pulling_stance:
+			_flash_prompt("¡Afianzando talones al suelo...! Ganando fuerza...", 0.3)
+
+		# Comportamiento normal si la Jarjacha aún domina la fuerza
 		if dist > 11.0:
 			_flash_prompt("¡La soga se rompió por exceso de tensión!", 2.5)
 			_release_rope()
 			return
 		elif dist > 6.0:
-			# Fuerte tirón físico modificando posición y velocidad
 			var pull_dir = (tethered_enemy.global_position - global_position).normalized()
 			var overshoot = dist - 6.0
 			global_position += pull_dir * (overshoot * 4.5 * delta)

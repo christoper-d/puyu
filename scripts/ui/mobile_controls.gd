@@ -9,7 +9,9 @@ extends Control
 @onready var btn_aim: Button = $Actions/BtnAim
 @onready var btn_jump: Button = $Actions/BtnJump
 @onready var btn_interact: Button = $Actions/BtnInteract
+@onready var btn_crouch: Button = get_node_or_null("Actions/BtnCrouch")
 @onready var btn_reload: Button = $Actions/BtnReload
+var mobile_crouch_toggle: bool = false
 @onready var weapon_dock: Control = $WeaponDock
 @onready var weapon_bar: HBoxContainer = $WeaponDock/WeaponBar
 @onready var btn_cycle_weapon: Button = $WeaponDock/BtnCycleWeapon
@@ -44,8 +46,12 @@ func reset_all() -> void:
 		joystick.reset_joystick()
 	joystick_touch_id = -1
 	camera_touch_id = -1
+	mobile_crouch_toggle = false
 	if is_instance_valid(player):
 		player.mobile_move_vector = Vector2.ZERO
+		player.is_crouching = false
+	if btn_crouch:
+		btn_crouch.modulate = Color(1.0, 1.0, 1.0, 0.85)
 
 func set_player(p: CharacterBody3D) -> void:
 	player = p
@@ -77,6 +83,8 @@ func _connect_signals() -> void:
 		btn_jump.pressed.connect(_on_jump_pressed)
 	if btn_interact:
 		btn_interact.pressed.connect(_on_interact_pressed)
+	if btn_crouch:
+		btn_crouch.pressed.connect(_on_crouch_pressed)
 	if btn_reload:
 		btn_reload.pressed.connect(_on_reload_pressed)
 	if btn_cycle_weapon:
@@ -140,6 +148,13 @@ func _on_jump_pressed() -> void:
 	if is_instance_valid(player) and player.has_method("_execute_jump"):
 		if player.is_on_floor():
 			player._execute_jump()
+
+func _on_crouch_pressed() -> void:
+	mobile_crouch_toggle = not mobile_crouch_toggle
+	if is_instance_valid(player):
+		player.is_crouching = mobile_crouch_toggle
+	if btn_crouch:
+		btn_crouch.modulate = Color(1.3, 1.25, 0.7, 1.0) if mobile_crouch_toggle else Color(1.0, 1.0, 1.0, 0.85)
 
 func _on_interact_pressed() -> void:
 	if is_instance_valid(player) and player.has_method("_handle_interaction"):
