@@ -16,13 +16,15 @@ var host: CharacterBody3D = null
 
 func init(host_node: CharacterBody3D) -> void:
 	host = host_node
-	states.clear()
 	for child in get_children():
 		if child is EnemyStateScript or child.has_method("physics_update"):
 			var s_name = child.name.to_lower()
-			states[s_name] = child
-			child.set("state_machine", self)
-			child.set("host", host)
+			if not states.has(s_name):
+				states[s_name] = child
+
+	for s in states.values():
+		s.set("state_machine", self)
+		s.set("host", host)
 
 	if not states.is_empty():
 		var start_key = initial_state_name.to_lower()
@@ -33,6 +35,7 @@ func init(host_node: CharacterBody3D) -> void:
 
 func add_state(state_name: String, state_node: Node) -> void:
 	var key = state_name.to_lower()
+	state_node.name = key
 	states[key] = state_node
 	state_node.set("state_machine", self)
 	state_node.set("host", host)

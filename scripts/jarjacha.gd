@@ -77,6 +77,8 @@ var struggle_warning_given: bool = false
 var enrage_boost_timer: float = 0.0
 var tether_source_node: Node3D = null
 var is_lassoed_by_player: bool = false
+var is_being_dragged: bool = false
+var drag_strength: float = 0.0
 var active_tethers: Array[Dictionary] = []
 
 # Attack timers
@@ -260,10 +262,22 @@ func apply_player_lasso() -> void:
 
 func release_player_lasso() -> void:
 	is_lassoed_by_player = false
+	is_being_dragged = false
+	drag_strength = 0.0
+
+func apply_player_drag(_puller_pos: Vector3, strength: float) -> void:
+	is_being_dragged = true
+	drag_strength = strength
+
+func release_player_drag() -> void:
+	is_being_dragged = false
+	drag_strength = 0.0
 
 func add_post_tether(anchor_world_pos: Vector3, max_dist: float, post_node: Node3D = null, rope_vis: Node3D = null) -> void:
 	is_tethered = true
 	is_lassoed_by_player = false
+	is_being_dragged = false
+	drag_strength = 0.0
 	struggle_timer = 0.0
 	struggle_warning_given = false
 
