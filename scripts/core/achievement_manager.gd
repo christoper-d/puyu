@@ -37,6 +37,8 @@ var catalog: Dictionary = {
 
 var unlocked: Dictionary = {} # id -> timestamp string
 var toast_queue: Array[Dictionary] = []
+@export var toast_display_duration: float = 6.5
+
 var is_showing_toast: bool = false
 
 # Nodos de UI del Toast
@@ -47,6 +49,7 @@ var lbl_desc: Label = null
 var current_tween: Tween = null
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 125 # Por encima del HUD y elementos del juego
 	_build_toast_ui()
 	load_achievements()
@@ -213,20 +216,20 @@ func _show_next_toast() -> void:
 	if current_tween and current_tween.is_valid():
 		current_tween.kill()
 
-	toast_panel.offset_top = -90
+	toast_panel.offset_top = -90.0
 	toast_panel.modulate.a = 0.0
 
 	current_tween = create_tween()
 	current_tween.set_parallel(true)
-	current_tween.tween_property(toast_panel, "offset_top", 16.0, 0.45).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	current_tween.tween_property(toast_panel, "modulate:a", 1.0, 0.3)
+	current_tween.tween_property(toast_panel, "offset_top", 16.0, 0.55).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	current_tween.tween_property(toast_panel, "modulate:a", 1.0, 0.45)
 
-	current_tween.chain().tween_interval(3.5)
+	current_tween.chain().tween_interval(toast_display_duration)
 
 	var exit_tween = current_tween.chain()
 	exit_tween.set_parallel(true)
-	exit_tween.tween_property(toast_panel, "offset_top", -90.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	exit_tween.tween_property(toast_panel, "modulate:a", 0.0, 0.3)
+	exit_tween.tween_property(toast_panel, "offset_top", -90.0, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	exit_tween.tween_property(toast_panel, "modulate:a", 0.0, 0.45)
 
 	current_tween.chain().tween_callback(Callable(self, "_show_next_toast"))
 

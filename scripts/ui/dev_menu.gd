@@ -347,13 +347,36 @@ func _build_ui() -> void:
 	ach_header.add_theme_color_override("font_color", Color(0.95, 0.8, 0.3, 1.0))
 	tab_ach.add_child(ach_header)
 
+	var ach_dur_lbl = Label.new()
+	var current_dur: float = 6.5
+	var ach_mgr = get_node_or_null("/root/Achievements")
+	if ach_mgr and "toast_display_duration" in ach_mgr:
+		current_dur = ach_mgr.toast_display_duration
+	ach_dur_lbl.text = "Duración Toast en pantalla: %.1fs" % current_dur
+	ach_dur_lbl.add_theme_font_size_override("font_size", 9)
+	ach_dur_lbl.add_theme_color_override("font_color", Color(0.85, 0.85, 0.9, 1.0))
+	tab_ach.add_child(ach_dur_lbl)
+
+	var sld_dur = HSlider.new()
+	sld_dur.min_value = 2.0
+	sld_dur.max_value = 15.0
+	sld_dur.step = 0.5
+	sld_dur.value = current_dur
+	sld_dur.value_changed.connect(func(val: float):
+		ach_dur_lbl.text = "Duración Toast en pantalla: %.1fs" % val
+		var mgr = get_node_or_null("/root/Achievements")
+		if mgr and "toast_display_duration" in mgr:
+			mgr.toast_display_duration = val
+	)
+	tab_ach.add_child(sld_dur)
+
 	var btn_test_tupac = Button.new()
 	btn_test_tupac.text = "🏆 Test: Desbloquear Túpac Amaru"
 	btn_test_tupac.add_theme_font_size_override("font_size", 10)
 	btn_test_tupac.pressed.connect(func():
-		var ach_mgr = get_node_or_null("/root/Achievements")
-		if ach_mgr and ach_mgr.has_method("unlock"):
-			ach_mgr.unlock("tupac_amaru")
+		var mgr = get_node_or_null("/root/Achievements")
+		if mgr and mgr.has_method("unlock"):
+			mgr.unlock("tupac_amaru")
 	)
 	tab_ach.add_child(btn_test_tupac)
 
@@ -361,9 +384,9 @@ func _build_ui() -> void:
 	btn_reset_ach.text = "🔄 Resetear Todos los Logros"
 	btn_reset_ach.add_theme_font_size_override("font_size", 10)
 	btn_reset_ach.pressed.connect(func():
-		var ach_mgr = get_node_or_null("/root/Achievements")
-		if ach_mgr and ach_mgr.has_method("reset_all_achievements"):
-			ach_mgr.reset_all_achievements()
+		var mgr = get_node_or_null("/root/Achievements")
+		if mgr and mgr.has_method("reset_all_achievements"):
+			mgr.reset_all_achievements()
 			if Events:
 				Events.prompt_flashed.emit("Logros reseteados en disco", 2.0)
 	)
