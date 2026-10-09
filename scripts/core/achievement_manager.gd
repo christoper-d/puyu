@@ -32,6 +32,16 @@ var catalog: Dictionary = {
 		"title": "Fin del Pecado",
 		"description": "Derrota a la Jarjacha en su fase final y libera al pueblo.",
 		"secret": false
+	},
+	"luz_socavon": {
+		"title": "Luz en el Socavón",
+		"description": "Encandila a El Muki enfocándole directamente con el haz de tu linterna.",
+		"secret": false
+	},
+	"rey_socavon": {
+		"title": "Rey del Socavón",
+		"description": "Vence a El Muki y pon fin a sus emboscadas en las profundidades.",
+		"secret": false
 	}
 }
 
@@ -147,6 +157,10 @@ func _on_prompt_flashed(message: String, _duration: float) -> void:
 		unlock("fuerza_chaccu")
 	elif "LA JARJACHA HA SIDO DERROTADA" in message:
 		unlock("fin_del_pecado")
+	elif "EL MUKI HA SIDO DERROTADO" in message:
+		unlock("rey_socavon")
+	elif "cegado por tu linterna" in message:
+		unlock("luz_socavon")
 
 ## Desbloquea un logro si aún no ha sido obtenido
 func unlock(id: String) -> bool:

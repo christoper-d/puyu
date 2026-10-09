@@ -3,6 +3,9 @@ extends CanvasLayer
 ## Panel de Desarrollo y Depuración en Tiempo Real — PUYU
 ## Autoload que permite configurar controles (PC vs Móvil), iluminación y trucos de prueba.
 
+const MukiScript = preload("res://scripts/muki.gd")
+const MukiScene = preload("res://scenes/enemies/muki.tscn")
+
 var is_open: bool = false
 var is_mobile_mode: bool = false
 
@@ -313,6 +316,20 @@ func _build_ui() -> void:
 	btn_teleport.pressed.connect(_teleport_jarjacha)
 	tab_combat.add_child(btn_teleport)
 
+	var btn_spawn_muki = Button.new()
+	btn_spawn_muki.text = "⛏️ Spawnear El Muki Frente al Jugador"
+	btn_spawn_muki.add_theme_font_size_override("font_size", 10)
+	btn_spawn_muki.focus_mode = Control.FOCUS_NONE
+	btn_spawn_muki.pressed.connect(_spawn_muki)
+	tab_combat.add_child(btn_spawn_muki)
+
+	var btn_teleport_muki = Button.new()
+	btn_teleport_muki.text = "📍 Traer El Muki Frente al Jugador"
+	btn_teleport_muki.add_theme_font_size_override("font_size", 10)
+	btn_teleport_muki.focus_mode = Control.FOCUS_NONE
+	btn_teleport_muki.pressed.connect(_teleport_muki)
+	tab_combat.add_child(btn_teleport_muki)
+
 	# --- TAB 4: DIAGNÓSTICO ---
 	var tab_diag = VBoxContainer.new()
 	tab_diag.name = "📊 Estado"
@@ -380,6 +397,26 @@ func _build_ui() -> void:
 	)
 	tab_ach.add_child(btn_test_tupac)
 
+	var btn_test_muki_luz = Button.new()
+	btn_test_muki_luz.text = "🏆 Test: Desbloquear Luz en el Socavón"
+	btn_test_muki_luz.add_theme_font_size_override("font_size", 10)
+	btn_test_muki_luz.pressed.connect(func():
+		var mgr = get_node_or_null("/root/Achievements")
+		if mgr and mgr.has_method("unlock"):
+			mgr.unlock("luz_socavon")
+	)
+	tab_ach.add_child(btn_test_muki_luz)
+
+	var btn_test_muki_rey = Button.new()
+	btn_test_muki_rey.text = "🏆 Test: Desbloquear Rey del Socavón"
+	btn_test_muki_rey.add_theme_font_size_override("font_size", 10)
+	btn_test_muki_rey.pressed.connect(func():
+		var mgr = get_node_or_null("/root/Achievements")
+		if mgr and mgr.has_method("unlock"):
+			mgr.unlock("rey_socavon")
+	)
+	tab_ach.add_child(btn_test_muki_rey)
+
 	var btn_reset_ach = Button.new()
 	btn_reset_ach.text = "🔄 Resetear Todos los Logros"
 	btn_reset_ach.add_theme_font_size_override("font_size", 10)
@@ -443,15 +480,41 @@ func _teleport_jarjacha() -> void:
 	if not is_instance_valid(_player_node):
 		return
 	var enemies = get_tree().get_nodes_in_group("enemy")
-	if enemies.is_empty():
+	for enemy in enemies:
+		if is_instance_valid(enemy) and enemy is CharacterBody3D and enemy.get_script() != MukiScript:
+			var forward = -_player_node.global_transform.basis.z
+			forward.y = 0.0
+			enemy.global_position = _player_node.global_position + (forward.normalized() * 5.5)
+			if Events:
+				Events.prompt_flashed.emit("🛠️ Jarjacha posicionada frente al jugador", 1.8)
+			return
+
+func _spawn_muki() -> void:
+	if not is_instance_valid(_player_node):
 		return
-	var enemy = enemies[0]
-	if is_instance_valid(enemy):
-		var forward = -_player_node.global_transform.basis.z
-		forward.y = 0.0
-		enemy.global_position = _player_node.global_position + (forward.normalized() * 5.5)
-		if Events:
-			Events.prompt_flashed.emit("🛠️ Jarjacha posicionada frente al jugador", 1.8)
+	var muki_inst = MukiScene.instantiate()
+	var forward = -_player_node.global_transform.basis.z
+	forward.y = 0.0
+	var spawn_pos = _player_node.global_position + (forward.normalized() * 5.0)
+	muki_inst.global_position = spawn_pos
+	get_tree().current_scene.add_child(muki_inst)
+	if Events:
+		Events.prompt_flashed.emit("⛏️ ¡El Muki ha emergido frente a ti!", 2.2)
+
+func _teleport_muki() -> void:
+	if not is_instance_valid(_player_node):
+		return
+	var enemies = get_tree().get_nodes_in_group("enemy")
+	for enemy in enemies:
+		if is_instance_valid(enemy) and enemy.get_script() == MukiScript:
+			var forward = -_player_node.global_transform.basis.z
+			forward.y = 0.0
+			enemy.global_position = _player_node.global_position + (forward.normalized() * 4.5)
+			if Events:
+				Events.prompt_flashed.emit("🛠️ El Muki posicionado frente al jugador", 1.8)
+			return
+	# Si no existe ninguno instanciado, spawnearlo
+	_spawn_muki()
 
 func _update_ui_state_from_scene() -> void:
 	if not is_instance_valid(main_panel):
