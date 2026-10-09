@@ -1,0 +1,287 @@
+[gd_scene load_steps=18 format=3 uid="uid://plaza_nueva_v101"]
+
+[ext_resource type="PackedScene" path="res://scenes/architecture/iglesia.tscn" id="1_iglesia"]
+[ext_resource type="PackedScene" path="res://scenes/architecture/casa_1.tscn" id="2_casa1"]
+[ext_resource type="PackedScene" path="res://scenes/architecture/apacheta.tscn" id="3_apacheta"]
+[ext_resource type="PackedScene" path="res://scenes/props/poste_luz.tscn" id="4_lamp"]
+[ext_resource type="PackedScene" path="res://scenes/props/poste_amarrar.tscn" id="5_tether"]
+[ext_resource type="PackedScene" path="res://scenes/props/pickup_escopeta.tscn" id="6_shotgun"]
+[ext_resource type="PackedScene" path="res://scenes/props/pickup_hacha.tscn" id="7_axe"]
+[ext_resource type="PackedScene" path="res://scenes/props/pickup_soga.tscn" id="8_rope"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="9_player"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/jarjacha.tscn" id="10_enemy_jarjacha"]
+[ext_resource type="Script" path="res://scripts/terrain.gd" id="12_terrain_script"]
+[ext_resource type="Shader" path="res://shaders/ps2_lit.gdshader" id="13_ps2_shader"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.02, 0.02, 0.04, 1)
+sky_horizon_color = Color(0.06, 0.04, 0.03, 1)
+ground_bottom_color = Color(0.01, 0.01, 0.01, 1)
+ground_horizon_color = Color(0.06, 0.04, 0.03, 1)
+
+[sub_resource type="Sky" id="Sky_env"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_level"]
+background_mode = 2
+sky = SubResource("Sky_env")
+ambient_light_source = 1
+ambient_light_color = Color(0.04, 0.06, 0.10, 1)
+ambient_light_energy = 0.12
+tonemap_mode = 0
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.02, 0.015, 0.01, 1)
+fog_density = 0.9
+fog_depth_begin = 12.0
+fog_depth_end = 36.0
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.04
+volumetric_fog_albedo = Color(0.55, 0.42, 0.22, 1)
+volumetric_fog_emission = Color(0.04, 0.02, 0.00, 1)
+volumetric_fog_emission_energy = 0.08
+
+[sub_resource type="ShaderMaterial" id="StandardMaterial3D_ground"]
+render_priority = 0
+shader = ExtResource("13_ps2_shader")
+shader_parameter/jitter_amount = 0.05
+shader_parameter/affine_mapping = true
+shader_parameter/fog_density = 0.02
+shader_parameter/fog_color = Color(0.02, 0.015, 0.01, 1)
+shader_parameter/albedo_color = Color(0.15, 0.12, 0.1, 1.0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dirt"]
+albedo_color = Color(0.12, 0.09, 0.07, 1.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor_solid"]
+size = Vector3(160, 2, 160)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_ns"]
+size = Vector3(90, 20, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_ew"]
+size = Vector3(2, 20, 90)
+
+[node name="PlazaNueva" type="Node3D"]
+
+[node name="SolidFloor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionFloor" type="CollisionShape3D" parent="SolidFloor"]
+shape = SubResource("BoxShape3D_floor_solid")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_level")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 25, 0)
+light_color = Color(0.68, 0.74, 0.90, 1)
+light_energy = 0.06
+shadow_enabled = true
+shadow_opacity = 0.5
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+material_override = SubResource("StandardMaterial3D_ground")
+script = ExtResource("12_terrain_script")
+size = Vector2(130, 130)
+sub_divisions = Vector2(65, 65)
+height_scale = 3.0
+noise_scale = 0.05
+generate = true
+
+[node name="ParkArea" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -2)
+size = Vector3(22, 0.1, 22)
+material = SubResource("StandardMaterial3D_dirt")
+
+[node name="Apacheta" parent="." instance=ExtResource("3_apacheta")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -2)
+
+[node name="Iglesia" parent="." instance=ExtResource("1_iglesia")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -26)
+
+[node name="Architecture" type="Node3D" parent="."]
+
+[node name="CasaNorth_L" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 0, -25.5)
+
+[node name="CasaNorth_R" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 0, -25.5)
+
+[node name="CasaWest_1" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.5, 0, -18.0)
+
+[node name="CasaWest_2" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.5, 0, -11.5)
+
+[node name="CasaWest_3" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.5, 0, -5.0)
+
+[node name="CasaWest_4" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.5, 0, 2.5)
+
+[node name="CasaWest_5" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.5, 0, 9.5)
+
+[node name="CasaWest_6" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.5, 0, 16.5)
+
+[node name="CasaWest_7" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.5, 0, 23.5)
+
+[node name="CasaAlleyWest_1" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -25.5, 0, -11.5)
+
+[node name="CasaAlleyWest_2" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -25.5, 0, 9.5)
+
+[node name="CasaEast_1" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18.5, 0, -18.0)
+
+[node name="CasaEast_2" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18.5, 0, -11.5)
+
+[node name="CasaEast_3" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18.5, 0, -5.0)
+
+[node name="CasaEast_4" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18.5, 0, 2.5)
+
+[node name="CasaEast_5" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18.5, 0, 9.5)
+
+[node name="CasaEast_6" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18.5, 0, 16.5)
+
+[node name="CasaEast_7" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18.5, 0, 23.5)
+
+[node name="CasaAlleyEast_1" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25.5, 0, -11.5)
+
+[node name="CasaAlleyEast_2" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 25.5, 0, 9.5)
+
+[node name="CasaSouth_SW1" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -20.5, 0, 30.5)
+
+[node name="CasaSouth_SW2" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -14.0, 0, 30.5)
+
+[node name="CasaSouth_SW3" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -7.5, 0, 30.5)
+
+[node name="CasaSouth_SE1" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 7.5, 0, 30.5)
+
+[node name="CasaSouth_SE2" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14.0, 0, 30.5)
+
+[node name="CasaSouth_SE3" parent="Architecture" instance=ExtResource("2_casa1")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 20.5, 0, 30.5)
+
+[node name="Lighting" type="Node3D" parent="."]
+
+[node name="PosteLuz_0" parent="Lighting" instance=ExtResource("4_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -12)
+
+[node name="PosteLuz_1" parent="Lighting" instance=ExtResource("4_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -12)
+
+[node name="PosteLuz_2" parent="Lighting" instance=ExtResource("4_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 12)
+
+[node name="PosteLuz_3" parent="Lighting" instance=ExtResource("4_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 12)
+
+[node name="PosteLuz_4" parent="Lighting" instance=ExtResource("4_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -20)
+
+[node name="PosteLuz_5" parent="Lighting" instance=ExtResource("4_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -20)
+
+[node name="PosteLuz_6" parent="Lighting" instance=ExtResource("4_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 25)
+
+[node name="PosteLuz_7" parent="Lighting" instance=ExtResource("4_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 25)
+
+[node name="PosteLuz_WestAlley" parent="Lighting" instance=ExtResource("4_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22, 0, -1)
+
+[node name="PosteLuz_EastAlley" parent="Lighting" instance=ExtResource("4_lamp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -1)
+
+[node name="Tethers" type="Node3D" parent="."]
+
+[node name="PosteAmarrar_0" parent="Tethers" instance=ExtResource("5_tether")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -2)
+
+[node name="PosteAmarrar_1" parent="Tethers" instance=ExtResource("5_tether")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
+
+[node name="PosteAmarrar_2" parent="Tethers" instance=ExtResource("5_tether")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -10)
+
+[node name="PosteAmarrar_3" parent="Tethers" instance=ExtResource("5_tether")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -10)
+
+[node name="PosteAmarrar_4" parent="Tethers" instance=ExtResource("5_tether")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 6)
+
+[node name="PosteAmarrar_5" parent="Tethers" instance=ExtResource("5_tether")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 6)
+
+[node name="Pickups" type="Node3D" parent="."]
+
+[node name="PickupShotgun" parent="Pickups" instance=ExtResource("6_shotgun")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0.5, 12)
+
+[node name="PickupAxe" parent="Pickups" instance=ExtResource("7_axe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.5, 12)
+
+[node name="PickupRope" parent="Pickups" instance=ExtResource("8_rope")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 8)
+
+[node name="Player" parent="." instance=ExtResource("9_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 15)
+
+[node name="Jarjacha" parent="." instance=ExtResource("10_enemy_jarjacha")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
+
+[node name="InvisibleWalls" type="Node3D" parent="."]
+
+[node name="InvisibleWallN" type="StaticBody3D" parent="InvisibleWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, -42)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InvisibleWalls/InvisibleWallN"]
+shape = SubResource("BoxShape3D_wall_ns")
+
+[node name="InvisibleWallS" type="StaticBody3D" parent="InvisibleWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 42)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InvisibleWalls/InvisibleWallS"]
+shape = SubResource("BoxShape3D_wall_ns")
+
+[node name="InvisibleWallE" type="StaticBody3D" parent="InvisibleWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 10, 0)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InvisibleWalls/InvisibleWallE"]
+shape = SubResource("BoxShape3D_wall_ew")
+
+[node name="InvisibleWallW" type="StaticBody3D" parent="InvisibleWalls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -42, 10, 0)
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InvisibleWalls/InvisibleWallW"]
+shape = SubResource("BoxShape3D_wall_ew")
